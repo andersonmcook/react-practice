@@ -26,6 +26,14 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
+app.get('/api/todos', (req, res) => {
+  const data = [{todo: 'a thing', id: 1}, {todo: 'a second thing', id: 2}]
+  console.log('data', data)
+  res.send(data)
+  // console.log('data', JSON.parse(data))
+  // res.json(data)
+})
+
 // post routes
 
 

@@ -27,9 +27,9 @@ const TodoApp = React.createClass({
   render: function () {
     return (
       <div>
-        <h1>Todos</h1>
+        <h1>My Todos</h1>
         <TodoAdd onTodoSubmit={this.handleTodoSubmit}/>
-        <TodosList data={this.state.data}/>
+        <TodoList data={this.state.data}/>
       </div>
     )
   }
@@ -54,16 +54,45 @@ const TodoAdd = React.createClass({
   },
   render: function () {
     return (
-      <form onSubmit={this.handleTodoSubmit}>
-        <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.todo} onChange={this.handleTodoChange}/>
-        <button type='submit' className='btn btn-default'>Add Todo</button>
-      </form>
+      <div>
+        <form className='form-inline' onSubmit={this.handleTodoSubmit}>
+          <div className='form-group'>
+            <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.todo} onChange={this.handleTodoChange}/>
+          </div>
+          <button type='submit' className='btn btn-default'>Add Todo</button>
+        </form>
+        <h4>Todo List</h4>
+      </div>
     )
   }
 })
 
 // todo list
 // should be a ul
+const TodoList = React.createClass({
+  render: function () {
+    console.log('data', this.props.data)
+    const todos = this.props.data.map(todo => {
+      return (
+        <Todo key={todo.id}>{todo.todo}</Todo>
+      )
+    })
+    return (
+      <ul className='list-group'>
+        {todos}
+      </ul>
+    )
+  }
+})
 
 // each todo
 // should be a li
+const Todo = React.createClass({
+  render: function () {
+    return (
+      <li key={this.props.id} className='list-group-item'>{this.props.children}</li>
+    )
+  }
+})
+
+ReactDOM.render(<TodoApp url='/api/todos'/>, document.getElementById('todoapp'))

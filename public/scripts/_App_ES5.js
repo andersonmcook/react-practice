@@ -33,10 +33,10 @@ var TodoApp = React.createClass({
       React.createElement(
         'h1',
         null,
-        'Todos'
+        'My Todos'
       ),
       React.createElement(TodoAdd, { onTodoSubmit: this.handleTodoSubmit }),
-      React.createElement(TodosList, { data: this.state.data })
+      React.createElement(TodoList, { data: this.state.data })
     );
   }
 });
@@ -62,13 +62,26 @@ var TodoAdd = React.createClass({
   },
   render: function render() {
     return React.createElement(
-      'form',
-      { onSubmit: this.handleTodoSubmit },
-      React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Write a todo item here', value: this.state.todo, onChange: this.handleTodoChange }),
+      'div',
+      null,
       React.createElement(
-        'button',
-        { type: 'submit', className: 'btn btn-default' },
-        'Add Todo'
+        'form',
+        { className: 'form-inline', onSubmit: this.handleTodoSubmit },
+        React.createElement(
+          'div',
+          { className: 'form-group' },
+          React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Write a todo item here', value: this.state.todo, onChange: this.handleTodoChange })
+        ),
+        React.createElement(
+          'button',
+          { type: 'submit', className: 'btn btn-default' },
+          'Add Todo'
+        )
+      ),
+      React.createElement(
+        'h4',
+        null,
+        'Todo List'
       )
     );
   }
@@ -76,6 +89,38 @@ var TodoAdd = React.createClass({
 
 // todo list
 // should be a ul
+var TodoList = React.createClass({
+  displayName: 'TodoList',
+
+  render: function render() {
+    console.log('data', this.props.data);
+    var todos = this.props.data.map(function (todo) {
+      return React.createElement(
+        Todo,
+        { key: todo.id },
+        todo.todo
+      );
+    });
+    return React.createElement(
+      'ul',
+      { className: 'list-group' },
+      todos
+    );
+  }
+});
 
 // each todo
 // should be a li
+var Todo = React.createClass({
+  displayName: 'Todo',
+
+  render: function render() {
+    return React.createElement(
+      'li',
+      { key: this.props.id, className: 'list-group-item' },
+      this.props.children
+    );
+  }
+});
+
+ReactDOM.render(React.createElement(TodoApp, { url: '/api/todos' }), document.getElementById('todoapp'));
