@@ -53,6 +53,8 @@ app.get('/api/todos', todoCtrl.loadTodos)
 // post routes
 app.post('/api/todos', todoCtrl.createTodo)
 
+app.post('/api/todos/:todoID', todoCtrl.updateTodo)
+
 
 mongoose.connect(MONGODB_URL, (err) => {
   // handle this better

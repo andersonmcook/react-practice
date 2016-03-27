@@ -107,12 +107,12 @@ const TodoList = React.createClass({
 // should be a li
 const Todo = React.createClass({
   render: function () {
-    console.log('this.props', this.props)
+    // console.log('this.props', this.props)
     return (
       <li key={this.props.id} id={this.props.id} className='list-group-item clearfix'>
         <div className='pull-left'>{this.props.children}</div>
         <div className='btn-group pull-right'>
-            <TodoCompleteCheck isCompleted={this.props.isCompleted}/>
+            <TodoCompleteCheck dataId={this.props.id} isCompleted={this.props.isCompleted}/>
             <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
         </div>
       </li>
@@ -125,15 +125,34 @@ const Todo = React.createClass({
 // todo checkmark
 const TodoCompleteCheck = React.createClass({
   getInitialState: function() {
-    // console.log('check initial State')
-    return {isCompleted: false};
+    return {isCompleted: false, dataId: ''};
   },
   componentDidMount: function () {
-    // console.log('mount initial', this.props.isCompleted, 'is undefined')
-    // console.log('mount initial props and then state', this.props, this.state)
-    this.setState({isCompleted: this.props.isCompleted})
+    // console.log('this.props', this.props)
+    this.setState({isCompleted: this.props.isCompleted, dataId: this.props.dataId})
   },
-  handleClick: function(event) {
+  handleClick: function(todo) {
+    // console.log('click todo', todo)
+    // console.log('click this.props', this.props)
+    // console.log('cick this.state', this.state)
+    // const todos = this.state
+    // todo.isCompleted = !todo.isCompleted
+    // const newTodos = todos.concat([todo])
+    // this.setState({data: newTodos})
+    $.ajax({
+      url: `/api/todos/${this.props.dataId}`,
+      dataType: 'json',
+      type: 'POST',
+      data: this.state,
+      success: function (data) {
+        // this.setState({data: todos})
+        console.log('data', data)
+        console.log('success')
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString())
+      }.bind(this)
+    })
     // console.log('check click before', this.state.isCompleted)
     this.setState({isCompleted: !this.state.isCompleted});
     // console.log('check click after', !this.state.isCompleted)
@@ -142,7 +161,7 @@ const TodoCompleteCheck = React.createClass({
     const glyphicon = this.state.isCompleted ? 'glyphicon glyphicon-repeat' : 'glyphicon glyphicon-ok'
     const color = this.state.isCompleted ? 'btn btn-warning' : 'btn btn-success'
     return (
-      <button type="button" className={color} onClick={this.handleClick}><span className={glyphicon}></span></button>
+      <button dataId={this.state.dataId} type="button" className={color} onClick={this.handleClick}><span className={glyphicon}></span></button>
     );
   }
 });
