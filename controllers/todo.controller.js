@@ -8,7 +8,6 @@ module.exports = {
   loadTodos (req, res) {
     console.log('in loadTodos')
     Todo.find({isCompleted: false}, (err, todos) => {
-    // Todo.find({}, (err, todos) => {
       if (err) throw err
       console.log('todos in loadTodos', todos)
       res.send(todos)
@@ -21,9 +20,6 @@ module.exports = {
   },
 
   createTodo (req, res) {
-    console.log('in create')
-    console.log('req.body', req.body)
-    // Todo.create({todo: 'completed task', isCompleted: true}, (err, data) => {
       Todo.create(req.body, (err, data) => {
       if (err) throw err;
       console.log('created data', data)
@@ -50,15 +46,4 @@ module.exports = {
 //       }
 //     })
 //   },
-
-//   saveQA (req, res) {
-//     Question.create(req.body, (err, data) => {
-//       if (err) throw err;
-//       res.redirect(`/${data.url}`)
-//     })
-//   },
-
-//   form (req, res) {
-//     res.render('form')
-//   }
 }

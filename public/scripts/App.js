@@ -1,5 +1,5 @@
 'use strict'
-
+// todo app with form and list of todos
 const TodoApp = React.createClass({
   loadTodos: function () {
     $.ajax({
@@ -14,6 +14,7 @@ const TodoApp = React.createClass({
       }.bind(this)
     })
   },
+
   handleTodoSubmit: function (todo) {
     const todos = this.state.data
     todo.isCompleted = false
@@ -106,7 +107,13 @@ const TodoList = React.createClass({
 const Todo = React.createClass({
   render: function () {
     return (
-      <li key={this.props._id} className='list-group-item'>{this.props.children}</li>
+      <li key={this.props._id} className='list-group-item clearfix'>
+        <div className='pull-left'>{this.props.children}</div>
+        <div className='btn-group pull-right'>
+            <button type="button" className="btn btn-success pull"><span className='glyphicon glyphicon-ok'></span></button>
+            <button type="button" className="btn btn-danger"><span className='glyphicon glyphicon-remove'></span></button>
+        </div>
+      </li>
     )
   }
 })

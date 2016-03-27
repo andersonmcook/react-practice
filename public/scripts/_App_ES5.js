@@ -1,4 +1,5 @@
 'use strict';
+// todo app with form and list of todos
 
 var TodoApp = React.createClass({
   displayName: 'TodoApp',
@@ -16,6 +17,7 @@ var TodoApp = React.createClass({
       }.bind(this)
     });
   },
+
   handleTodoSubmit: function handleTodoSubmit(todo) {
     var todos = this.state.data;
     todo.isCompleted = false;
@@ -133,8 +135,26 @@ var Todo = React.createClass({
   render: function render() {
     return React.createElement(
       'li',
-      { key: this.props._id, className: 'list-group-item' },
-      this.props.children
+      { key: this.props._id, className: 'list-group-item clearfix' },
+      React.createElement(
+        'div',
+        { className: 'pull-left' },
+        this.props.children
+      ),
+      React.createElement(
+        'div',
+        { className: 'btn-group pull-right' },
+        React.createElement(
+          'button',
+          { type: 'button', className: 'btn btn-success pull' },
+          React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+        ),
+        React.createElement(
+          'button',
+          { type: 'button', className: 'btn btn-danger' },
+          React.createElement('span', { className: 'glyphicon glyphicon-remove' })
+        )
+      )
     );
   }
 });
