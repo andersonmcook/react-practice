@@ -7,7 +7,7 @@ const Todo = require('../models/todo.model')
 module.exports = {
   loadTodos (req, res) {
     console.log('in loadTodos')
-    Todo.find({isCompleted: false}, (err, todos) => {
+    Todo.find({isRemoved: false}, (err, todos) => {
       if (err) throw err
       console.log('todos in loadTodos', todos)
       res.send(todos)

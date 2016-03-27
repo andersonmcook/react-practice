@@ -21,6 +21,7 @@ var TodoApp = React.createClass({
   handleTodoSubmit: function handleTodoSubmit(todo) {
     var todos = this.state.data;
     todo.isCompleted = false;
+    todo.isRemoved = false;
     var newTodos = todos.concat([todo]);
     this.setState({ data: newTodos });
     $.ajax({
@@ -115,7 +116,7 @@ var TodoList = React.createClass({
     var todos = this.props.data.map(function (todo) {
       return React.createElement(
         Todo,
-        { key: todo._id },
+        { key: todo._id, id: todo._id, isCompleted: todo.isCompleted },
         todo.todo
       );
     });
@@ -133,9 +134,10 @@ var Todo = React.createClass({
   displayName: 'Todo',
 
   render: function render() {
+    console.log('this.props', this.props);
     return React.createElement(
       'li',
-      { key: this.props._id, className: 'list-group-item clearfix' },
+      { key: this.props.id, id: this.props.id, className: 'list-group-item clearfix' },
       React.createElement(
         'div',
         { className: 'pull-left' },
@@ -144,11 +146,7 @@ var Todo = React.createClass({
       React.createElement(
         'div',
         { className: 'btn-group pull-right' },
-        React.createElement(
-          'button',
-          { type: 'button', className: 'btn btn-success pull' },
-          React.createElement('span', { className: 'glyphicon glyphicon-ok' })
-        ),
+        React.createElement(TodoCompleteCheck, { isCompleted: this.props.isCompleted }),
         React.createElement(
           'button',
           { type: 'button', className: 'btn btn-danger' },
@@ -158,5 +156,37 @@ var Todo = React.createClass({
     );
   }
 });
+
+//<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
+
+// todo checkmark
+var TodoCompleteCheck = React.createClass({
+  displayName: 'TodoCompleteCheck',
+
+  getInitialState: function getInitialState() {
+    // console.log('check initial State')
+    return { isCompleted: false };
+  },
+  componentDidMount: function componentDidMount() {
+    // console.log('mount initial', this.props.isCompleted, 'is undefined')
+    // console.log('mount initial props and then state', this.props, this.state)
+    this.setState({ isCompleted: this.props.isCompleted });
+  },
+  handleClick: function handleClick(event) {
+    // console.log('check click before', this.state.isCompleted)
+    this.setState({ isCompleted: !this.state.isCompleted });
+    // console.log('check click after', !this.state.isCompleted)
+  },
+  render: function render() {
+    var glyphicon = this.state.isCompleted ? 'glyphicon glyphicon-repeat' : 'glyphicon glyphicon-ok';
+    var color = this.state.isCompleted ? 'btn btn-warning' : 'btn btn-success';
+    return React.createElement(
+      'button',
+      { type: 'button', className: color, onClick: this.handleClick },
+      React.createElement('span', { className: glyphicon })
+    );
+  }
+});
+// end todo checkmark
 
 ReactDOM.render(React.createElement(TodoApp, { url: '/api/todos' }), document.getElementById('todoapp'));
