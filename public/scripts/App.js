@@ -14,8 +14,24 @@ const TodoApp = React.createClass({
       }.bind(this)
     })
   },
-  // add a todo code here
-  // handleTodoSubmit
+  handleTodoSubmit: function (todo) {
+    const todos = this.state.data
+    todo.isCompleted = false
+    const newTodos = todos.concat([todo])
+    this.setState({data: newTodos})
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: todo,
+      success: function (data) {
+        this.setState({data: todos})
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString())
+      }.bind(this)
+    })
+  },
   // on page load default
   getInitialState: function () {
     return {data: []}
@@ -74,7 +90,7 @@ const TodoList = React.createClass({
     console.log('data', this.props.data)
     const todos = this.props.data.map(todo => {
       return (
-        <Todo key={todo.id}>{todo.todo}</Todo>
+        <Todo key={todo._id}>{todo.todo}</Todo>
       )
     })
     return (
@@ -90,7 +106,7 @@ const TodoList = React.createClass({
 const Todo = React.createClass({
   render: function () {
     return (
-      <li key={this.props.id} className='list-group-item'>{this.props.children}</li>
+      <li key={this.props._id} className='list-group-item'>{this.props.children}</li>
     )
   }
 })

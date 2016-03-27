@@ -16,8 +16,24 @@ var TodoApp = React.createClass({
       }.bind(this)
     });
   },
-  // add a todo code here
-  // handleTodoSubmit
+  handleTodoSubmit: function handleTodoSubmit(todo) {
+    var todos = this.state.data;
+    todo.isCompleted = false;
+    var newTodos = todos.concat([todo]);
+    this.setState({ data: newTodos });
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: todo,
+      success: function (data) {
+        this.setState({ data: todos });
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString());
+      }.bind(this)
+    });
+  },
   // on page load default
   getInitialState: function getInitialState() {
     return { data: [] };
@@ -97,7 +113,7 @@ var TodoList = React.createClass({
     var todos = this.props.data.map(function (todo) {
       return React.createElement(
         Todo,
-        { key: todo.id },
+        { key: todo._id },
         todo.todo
       );
     });
@@ -117,7 +133,7 @@ var Todo = React.createClass({
   render: function render() {
     return React.createElement(
       'li',
-      { key: this.props.id, className: 'list-group-item' },
+      { key: this.props._id, className: 'list-group-item' },
       this.props.children
     );
   }
