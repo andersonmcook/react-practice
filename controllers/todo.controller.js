@@ -28,11 +28,11 @@ module.exports = {
 
   updateTodo (req, res) {
     const updateCompleted = !(JSON.parse(req.body.isCompleted))
-    Todo.findOneAndUpdate({_id: req.params.todoID}, {isCompleted: updateCompleted}, function (err, doc) {
+    Todo.findOneAndUpdate({_id: req.params.todoID}, {isCompleted: updateCompleted}, {new: true}, function (err, doc) {
       if (err) {
         console.log(err)
       }
-      // console.log('doc', doc)
+      console.log('doc', doc)
     })
   }
 // // render answer
