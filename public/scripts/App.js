@@ -133,30 +133,20 @@ const Todo = React.createClass({
 // EXAMPLE //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const TaskList = React.createClass({
-  deleteElement:function(){
-    console.log("remove");
-  },
-
   render: function(){
-    const displayTask  = function(task, taskIndex){
-      console.log("NEW ADDED TASK"+task);
+    const todos = this.props.items.map((task, taskIndex) => {
       return (
-        <li>
-          {task}
-          <button onClick= {this.deleteElement}> Delete </button>
+       <li key={taskIndex} dataId={task.time} className='list-group-item clearfix'>
+          <div className='pull-left'>{task.todo}</div>
+          <div className='btn-group pull-right'>
+            <button className='btn btn-success' onClick={this.props.deleteTask} dataId={task.time} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
+          </div>
         </li>
       )
-    }
+    })
     return (
       <ul className='list-group'>
-        {this.props.items.map((task, taskIndex) =>
-          <li key={taskIndex} dataId={task.time} className='list-group-item clearfix'>
-            <div className='pull-left'>{task.todo}</div>
-            <div className='btn-group pull-right'>
-              <button className='btn btn-success' onClick={this.props.deleteTask} dataId={task.time} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
-            </div>
-          </li>
-        )}
+        {todos}
       </ul>
     )
   }
@@ -176,7 +166,7 @@ const TaskApp = React.createClass({
     loadTodos: function () {
       $.ajax({
         url: this.props.url,
-        dataType: 'json',
+        // dataType: 'json',
         cache: false,
         success: function (data) {
           this.setState({items: data})
@@ -199,7 +189,7 @@ const TaskApp = React.createClass({
         //
         $.ajax({
           url: `/api/todos/${test.time}`,
-          dataType: 'json',
+          // dataType: 'json',
           type: 'POST',
           data: test,
           success: function (data, status, xhr) {
@@ -240,7 +230,7 @@ const TaskApp = React.createClass({
       // })
       $.ajax({
         url: this.props.url,
-        dataType: 'json',
+        // dataType: 'json',
         type: 'POST',
         data: todo,
         success: function (data) {

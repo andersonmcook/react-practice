@@ -166,49 +166,33 @@ var Todo = React.createClass({
 var TaskList = React.createClass({
   displayName: 'TaskList',
 
-  deleteElement: function deleteElement() {
-    console.log("remove");
-  },
-
   render: function render() {
     var _this2 = this;
 
-    var displayTask = function displayTask(task, taskIndex) {
-      console.log("NEW ADDED TASK" + task);
+    var todos = this.props.items.map(function (task, taskIndex) {
       return React.createElement(
         'li',
-        null,
-        task,
+        { key: taskIndex, dataId: task.time, className: 'list-group-item clearfix' },
         React.createElement(
-          'button',
-          { onClick: this.deleteElement },
-          ' Delete '
+          'div',
+          { className: 'pull-left' },
+          task.todo
+        ),
+        React.createElement(
+          'div',
+          { className: 'btn-group pull-right' },
+          React.createElement(
+            'button',
+            { className: 'btn btn-success', onClick: _this2.props.deleteTask, dataId: task.time, value: taskIndex },
+            React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+          )
         )
       );
-    };
+    });
     return React.createElement(
       'ul',
       { className: 'list-group' },
-      this.props.items.map(function (task, taskIndex) {
-        return React.createElement(
-          'li',
-          { key: taskIndex, dataId: task.time, className: 'list-group-item clearfix' },
-          React.createElement(
-            'div',
-            { className: 'pull-left' },
-            task.todo
-          ),
-          React.createElement(
-            'div',
-            { className: 'btn-group pull-right' },
-            React.createElement(
-              'button',
-              { className: 'btn btn-success', onClick: _this2.props.deleteTask, dataId: task.time, value: taskIndex },
-              React.createElement('span', { className: 'glyphicon glyphicon-ok' })
-            )
-          )
-        );
-      })
+      todos
     );
   }
 });
@@ -229,7 +213,7 @@ var TaskApp = React.createClass({
   loadTodos: function loadTodos() {
     $.ajax({
       url: this.props.url,
-      dataType: 'json',
+      // dataType: 'json',
       cache: false,
       success: function (data) {
         this.setState({ items: data });
@@ -252,7 +236,7 @@ var TaskApp = React.createClass({
     //
     $.ajax({
       url: '/api/todos/' + test.time,
-      dataType: 'json',
+      // dataType: 'json',
       type: 'POST',
       data: test,
       success: function (data, status, xhr) {
@@ -291,7 +275,7 @@ var TaskApp = React.createClass({
     // })
     $.ajax({
       url: this.props.url,
-      dataType: 'json',
+      // dataType: 'json',
       type: 'POST',
       data: todo,
       success: function (data) {
