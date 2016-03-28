@@ -24,6 +24,7 @@ module.exports = {
       Todo.create(req.body, (err, data) => {
       if (err) throw err;
       console.log('created data', data)
+      res.sendStatus(200)
     })
   },
 
@@ -33,10 +34,9 @@ module.exports = {
     console.log('req.body',req.body)
     console.log('req.body.time', req.body.time)
     Todo.findOneAndUpdate({time: req.params.todoID}, {isRemoved: true}, {new: true}, function (err, doc) {
-      if (err) {
-        throw err
-      }
+      if (err) throw err
       console.log('updated doc', doc)
+      res.sendStatus(200)
     })
   },
 

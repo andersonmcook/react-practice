@@ -150,7 +150,7 @@ const TaskList = React.createClass({
     return (
       <ul className='list-group'>
         {this.props.items.map((task, taskIndex) =>
-          <li key={taskIndex} dataId={task.time}className='list-group-item clearfix'>
+          <li key={taskIndex} dataId={task.time} className='list-group-item clearfix'>
             <div className='pull-left'>{task.todo}</div>
             <div className='btn-group pull-right'>
               <button className='btn btn-success' onClick={this.props.deleteTask} dataId={task.time} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
@@ -202,8 +202,10 @@ const TaskApp = React.createClass({
           dataType: 'json',
           type: 'POST',
           data: test,
-          success: function (data) {
+          success: function (data, status, xhr) {
             // this.setState({data: todos})
+            console.log('status', status)
+            console.log('xhr', xhr)
             console.log('handleclick data', data)
             console.log('success')
           }.bind(this),
@@ -226,19 +228,28 @@ const TaskApp = React.createClass({
 
     addTask:function (e){
       //
+      e.preventDefault();
       // this.state.isRemoved = false
       // this.state.time = Date.now()
       // this.setState({data: newTodos})
-      this.setState({todo: e.target.value, isRemoved: false, time: Date.now()})
-      console.log('addTask state', this.state)
+      // this.setState({todo: e.target.value, isRemoved: false, time: Date.now()})
+      const todo = {todo: this.state.todo, isRemoved: false, time: Date.now()}
+      // console.log('addTask state', this.state)
+      // $.post(this.props.url, todo, data => {
+      //   console.log('data',data)
+      // })
       $.ajax({
         url: this.props.url,
         dataType: 'json',
         type: 'POST',
-        data: this.state,
+        data: todo,
         success: function (data) {
           // this.setState({data: todos})
           console.log('success', data)
+          // this.setState({
+          //   items: this.state.items.concat([this.state]),
+          //   todo: ''
+          // })
         }.bind(this),
         error: function (xhr, status, error) {
           console.error(this.props.url, status, error.toString())
@@ -247,10 +258,11 @@ const TaskApp = React.createClass({
       //
       console.log('addtask', this.state)
       this.setState({
-        items: this.state.items.concat([this.state]),
+        // items: this.state.items.concat([this.state]),
+        items: this.state.items.concat([todo]),
         todo: ''
       })
-      e.preventDefault();
+      // e.preventDefault();
     },
 
     render: function(){
