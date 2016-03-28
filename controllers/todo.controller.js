@@ -32,28 +32,17 @@ module.exports = {
       if (err) {
         console.log(err)
       }
-      console.log('doc', doc)
+      console.log('updated doc', doc)
+    })
+  },
+
+  deleteTodo (req, res) {
+    const updateRemoved = !(JSON.parse(req.body.isRemoved))
+    Todo.findOneAndUpdate({_id: req.params.todoID}, {isRemoved: updateRemoved}, {new: true}, function (err, doc) {
+      if (err) {
+        console.log(err)
+      }
+      console.log('"deleted" doc', doc)
     })
   }
-// // render answer
-//   renderAnswer (req, res) {
-//     Question.findOne({url: req.params.question}, (err, data) => {
-//       if (err) throw err
-//       if (data === null) {
-//         res.redirect('/')
-//       } else if (data.answerfont === undefined) {
-//         console.log('in undefined options', data)
-//         data.questioncolor = data.questioncolor || 'black'
-//         data.answercolor = data.answercolor || 'black'
-//         data.topcolor = data.topcolor || 'white'
-//         data.bottomcolor = data.bottomcolor || 'white'
-//         data.questionfont = data.questionfont || 'sans-serif'
-//         data.answerfont = data.answerfont || 'sans-serif'
-
-//         res.render('answer', {words: data})
-//       } else {
-//         res.render('answer', {words: data})
-//       }
-//     })
-//   },
 }

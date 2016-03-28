@@ -32,21 +32,8 @@ app.use(bodyParser.urlencoded({
 // use static files
 app.use(express.static('public'))
 
-// default route
-// app.get('/', (req, res) => {
-//   res.render('index')
-// })
+
 app.get('/', todoCtrl.index)
-
-// app.get('/api/todos', (req, res) => {
-//   const data = [{todo: 'a thing', _id: 1}, {todo: 'a second thing', _id: 2}]
-//   console.log('data', data)
-//   res.send(data)
-//   // console.log('data', JSON.parse(data))
-//   // res.json(data)
-// })
-
-// app.get('/test', todoCtrl.create)
 
 app.get('/api/todos', todoCtrl.loadTodos)
 
@@ -54,6 +41,8 @@ app.get('/api/todos', todoCtrl.loadTodos)
 app.post('/api/todos', todoCtrl.createTodo)
 
 app.post('/api/todos/:todoID', todoCtrl.updateTodo)
+
+app.post('/api/todos/delete/:todoID', todoCtrl.deleteTodo)
 
 
 mongoose.connect(MONGODB_URL, (err) => {

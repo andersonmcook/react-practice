@@ -8,6 +8,7 @@ const TodoApp = React.createClass({
       cache: false,
       success: function (data) {
         this.setState({data: data})
+        // console.log('loadTodos', data)
       }.bind(this),
       error: function (xhr, status, error) {
         console.error(this.props.url, status, error.toString())
@@ -90,9 +91,9 @@ const TodoAdd = React.createClass({
 const TodoList = React.createClass({
   render: function () {
     console.log('data', this.props.data)
-    const todos = this.props.data.map(todo => {
+    const todos = this.props.data.map((todo) => {
       return (
-        <Todo key={todo._id} id={todo._id} isCompleted={todo.isCompleted}>{todo.todo}</Todo>
+        <Todo key={todo._id} dataId={todo._id} isCompleted={todo.isCompleted} isRemoved={todo.isRemoved}>{todo.todo}</Todo>
       )
     })
     return (
@@ -107,33 +108,35 @@ const TodoList = React.createClass({
 // should be a li
 const Todo = React.createClass({
   render: function () {
-    // console.log('this.props', this.props)
+    // console.log('todo props', this.props)
     return (
-      <li key={this.props.id} id={this.props.id} className='list-group-item clearfix'>
+      <li key={this.props.key} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
         <div className='pull-left'>{this.props.children}</div>
         <div className='btn-group pull-right'>
-            <TodoCompleteCheck dataId={this.props.id} isCompleted={this.props.isCompleted}/>
-            <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
+            <TodoCompleteCheck dataId={this.props.dataId} isCompleted={this.props.isCompleted}/>
+            <TodoRemoveCheck dataId={this.props.dataId} isRemoved={this.props.isRemoved}/>
         </div>
       </li>
     )
   }
 })
 
+            // <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
 //<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
 
 // todo checkmark
 const TodoCompleteCheck = React.createClass({
   getInitialState: function() {
-    return {isCompleted: false, dataId: ''};
+    return {isCompleted: false};
   },
   componentDidMount: function () {
-    // console.log('this.props', this.props)
-    this.setState({isCompleted: this.props.isCompleted, dataId: this.props.dataId})
+    // console.log('this.props in todocompletecheck', this.props)
+    // this.setState({isCompleted: this.props.isCompleted, dataId: this.props.dataId})
+    this.setState({isCompleted: this.props.isCompleted})
   },
   handleClick: function(todo) {
-    // console.log('click todo', todo)
-    // console.log('click this.props', this.props)
+    console.log('click todo', todo)
+    console.log('click this.props', this.props)
     // console.log('cick this.state', this.state)
     // const todos = this.state
     // todo.isCompleted = !todo.isCompleted
@@ -146,7 +149,7 @@ const TodoCompleteCheck = React.createClass({
       data: this.state,
       success: function (data) {
         // this.setState({data: todos})
-        console.log('data', data)
+        console.log('handleclick data', data)
         console.log('success')
       }.bind(this),
       error: function (xhr, status, error) {
@@ -161,10 +164,52 @@ const TodoCompleteCheck = React.createClass({
     const glyphicon = this.state.isCompleted ? 'glyphicon glyphicon-repeat' : 'glyphicon glyphicon-ok'
     const color = this.state.isCompleted ? 'btn btn-warning' : 'btn btn-success'
     return (
-      <button dataId={this.state.dataId} type="button" className={color} onClick={this.handleClick}><span className={glyphicon}></span></button>
-    );
+      <button dataId={this.props.dataId} type="button" className={color} onClick={this.handleClick}><span className={glyphicon}></span></button>
+    )
   }
-});
+})
 // end todo checkmark
+
+// delete
+
+const TodoRemoveCheck = React.createClass({
+  getInitialState: function() {
+    return {isRemoved: false};
+  },
+  componentDidMount: function () {
+    // console.log('this.props in removecheck', this.props)
+    // this.setState({isCompleted: this.props.isCompleted, dataId: this.props.dataId})
+    this.setState({isRemoved: this.props.isRemoved})
+  },
+  handleClick: function(todo) {
+    console.log('todo', todo)
+    console.log('handleClick in remove', this.props)
+    console.log('this.state.data in remove', this.state.data)
+    $.ajax({
+      url: `/api/todos/delete/${this.props.dataId}`,
+      dataType: 'json',
+      type: 'POST',
+      data: this.state,
+      success: function (data) {
+        // this.setState({data: todos})
+        console.log('handleclick data', data)
+        console.log('success')
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString())
+      }.bind(this)
+    })
+    // console.log('check click before', this.state.isCompleted)
+    this.setState({isRemoved: !this.state.isRemoved});
+    // console.log('check click after', !this.state.isCompleted)
+  },
+  render: function() {
+    return (
+      <button dataId={this.props.dataId} type="button" className='btn btn-danger' onClick={this.handleClick}><span className='glyphicon glyphicon-remove'></span></button>
+    )
+  }
+})
+// end delete
+
 
 ReactDOM.render(<TodoApp url='/api/todos'/>, document.getElementById('todoapp'))
