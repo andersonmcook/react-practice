@@ -6,9 +6,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const Todo = require('./models/todo.model')
 const todoCtrl = require('./controllers/todo.controller')
-// mongoose or postgres
-// models
-// controllers
+
 // routes
 const PORT = process.env.PORT || 3000
 
@@ -20,15 +18,12 @@ const MONGODB_DB = 'todos';
 const MONGODB_URL_PREFIX = MONGODB_USER ? `${MONGODB_USER}:${MONGODB_PASS}@` : ''
 const MONGODB_URL = `mongodb://${MONGODB_URL_PREFIX}${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DB}`
 
-// db stuff
-
 // use jade
 app.set('view engine', 'jade')
 
 // use bodyParser
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
+app.use(bodyParser.urlencoded({extended: false}))
+
 // use static files
 app.use(express.static('public'))
 
@@ -41,8 +36,6 @@ app.get('/api/todos', todoCtrl.loadTodos)
 app.post('/api/todos', todoCtrl.createTodo)
 
 app.post('/api/todos/:todoID', todoCtrl.updateTodo)
-
-app.post('/api/todos/delete/:todoID', todoCtrl.deleteTodo)
 
 
 mongoose.connect(MONGODB_URL, (err) => {

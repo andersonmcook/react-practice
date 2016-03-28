@@ -170,6 +170,7 @@ var TaskList = React.createClass({
     var _this2 = this;
 
     var todos = this.props.items.map(function (task, taskIndex) {
+      console.log(taskIndex);
       return React.createElement(
         'li',
         { key: taskIndex, dataId: task.time, className: 'list-group-item clearfix' },
@@ -230,7 +231,10 @@ var TaskApp = React.createClass({
   deleteTask: function deleteTask(e) {
     // console.log('this.state deelete' this.state)
     var taskIndex = parseInt(e.target.value, 10);
+    console.log(e.target.value);
+    console.log('HERE IS INDEX', taskIndex);
     var test = this.state.items[taskIndex];
+    console.log('here!!!!---->', test);
     test.isRemoved = true;
     console.log('test', test.time);
     console.log('this.props delete', this.state.items[taskIndex]);
@@ -243,20 +247,30 @@ var TaskApp = React.createClass({
       data: test,
       success: function (data, status, xhr) {
         // this.setState({data: todos})
-        console.log('status', status);
-        console.log('xhr', xhr);
+        // console.log('status', status)
+        // console.log('xhr', xhr)
         console.log('handleclick data', data);
-        console.log('success');
+        // console.log('success')
+        // this.setState(state => {
+        //   state.items.splice(taskIndex, 1);
+        //   return {items: state.items};
+        // });
       }.bind(this),
       error: function (xhr, status, error) {
         console.error(this.props.url, status, error.toString());
       }.bind(this)
     });
     //
-    this.setState(function (state) {
-      state.items.splice(taskIndex, 1);
-      return { items: state.items };
+    // const updatedItems = this.state.items.splice(taskIndex, 1)
+    var updatedItems = this.state.items.filter(function (el, index) {
+      return index !== taskIndex;
     });
+    console.log('updatedItems', updatedItems);
+    // this.setState(state => {
+    //   state.items.splice(taskIndex, 1);
+    //   return {items: state.items};
+    // });
+    this.setState({ items: updatedItems });
   },
 
   onChange: function onChange(e) {
