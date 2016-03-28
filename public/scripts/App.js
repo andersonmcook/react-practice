@@ -89,11 +89,16 @@ const TodoAdd = React.createClass({
 // todo list
 // should be a ul
 const TodoList = React.createClass({
+  handleRemove: function (event) {
+    // console.log('remove click', event.target.value)
+    console.log('remove click')
+    // const todos = this.props.data.filter()
+  },
   render: function () {
     console.log('data', this.props.data)
-    const todos = this.props.data.map((todo) => {
+    const todos = this.props.data.map((todo, index) => {
       return (
-        <Todo key={todo._id} dataId={todo._id} isCompleted={todo.isCompleted} isRemoved={todo.isRemoved}>{todo.todo}</Todo>
+        <Todo key={index} dataId={todo._id} isCompleted={todo.isCompleted} isRemoved={todo.isRemoved} handleRemove={this.handleRemove} text={todo.todo}/>
       )
     })
     return (
@@ -107,19 +112,108 @@ const TodoList = React.createClass({
 // each todo
 // should be a li
 const Todo = React.createClass({
+  testClick: function () {
+    console.log('test click')
+    console.log('clicked', this.props)
+  },
   render: function () {
-    // console.log('todo props', this.props)
+    console.log('todo props', this.props)
     return (
       <li key={this.props.key} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
-        <div className='pull-left'>{this.props.children}</div>
+        <div className='pull-left'>{this.props.text}</div>
         <div className='btn-group pull-right'>
             <TodoCompleteCheck dataId={this.props.dataId} isCompleted={this.props.isCompleted}/>
-            <TodoRemoveCheck dataId={this.props.dataId} isRemoved={this.props.isRemoved}/>
+            <TodoRemoveCheck dataId={this.props.dataId} isRemoved={this.props.isRemoved} onClick={this.textClick}/>
         </div>
       </li>
     )
   }
 })
+
+// EXAMPLE
+
+var TaskList = React.createClass({
+    deleteElement:function(){
+        console.log("remove");
+    },
+
+    render: function(){
+
+        var displayTask  = function(task, taskIndex){
+            console.log("NEW ADDED TASK"+task);
+
+            return <li>
+                {task}
+                <button onClick= {this.deleteElement}> Delete </button>
+            </li>;
+        };
+
+        return <ul>
+            {this.props.items.map((task, taskIndex) =>
+                <li key={taskIndex}>
+                    {task}
+                    <button onClick={this.props.deleteTask} value={taskIndex}> Delete </button>
+                </li>
+            )}
+        </ul>;
+    }
+ });
+
+var TaskApp = React.createClass({
+    getInitialState: function(){
+        return {
+             items: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+             task: ''
+        }
+    },
+
+    deleteTask: function(e) {
+        var taskIndex = parseInt(e.target.value, 10);
+        console.log('remove task: %d', taskIndex, this.state.items[taskIndex]);
+        this.setState(state => {
+            state.items.splice(taskIndex, 1);
+            return {items: state.items};
+        });
+    },
+
+    onChange: function(e) {
+        this.setState({ task: e.target.value });
+    },
+
+
+
+    addTask:function (e){
+        this.setState({
+            items: this.state.items.concat([this.state.task]),
+
+            task: ''
+        })
+
+        e.preventDefault();
+    },
+
+    render: function(){
+        return(
+            <div>
+                <h1>My Task </h1>
+                <TaskList items={this.state.items} deleteTask={this.deleteTask} />
+
+                <form onSubmit={this.addTask}>
+                    <input onChange={this.onChange} type="text" value={this.state.task}/>
+                    <button> Add Task </button>
+                </form>
+            </div>
+        );
+    }
+});
+
+// React.render(<TaskApp />, document.getElementById('todoapp'));
+
+// END EXAMPLE
+
+
+
+
 
             // <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
 //<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
@@ -205,7 +299,7 @@ const TodoRemoveCheck = React.createClass({
   },
   render: function() {
     return (
-      <button dataId={this.props.dataId} type="button" className='btn btn-danger' onClick={this.handleClick}><span className='glyphicon glyphicon-remove'></span></button>
+      <button dataId={this.props.dataId} type="button" className='btn btn-danger' handleRemove={this.props.handleRemove}><span className='glyphicon glyphicon-remove'></span></button>
     )
   }
 })

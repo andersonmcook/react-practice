@@ -112,14 +112,17 @@ var TodoAdd = React.createClass({
 var TodoList = React.createClass({
   displayName: 'TodoList',
 
+  handleRemove: function handleRemove(event) {
+    // console.log('remove click', event.target.value)
+    console.log('remove click');
+    // const todos = this.props.data.filter()
+  },
   render: function render() {
+    var _this = this;
+
     console.log('data', this.props.data);
-    var todos = this.props.data.map(function (todo) {
-      return React.createElement(
-        Todo,
-        { key: todo._id, dataId: todo._id, isCompleted: todo.isCompleted, isRemoved: todo.isRemoved },
-        todo.todo
-      );
+    var todos = this.props.data.map(function (todo, index) {
+      return React.createElement(Todo, { key: index, dataId: todo._id, isCompleted: todo.isCompleted, isRemoved: todo.isRemoved, handleRemove: _this.handleRemove, text: todo.todo });
     });
     return React.createElement(
       'ul',
@@ -134,25 +137,136 @@ var TodoList = React.createClass({
 var Todo = React.createClass({
   displayName: 'Todo',
 
+  testClick: function testClick() {
+    console.log('test click');
+    console.log('clicked', this.props);
+  },
   render: function render() {
-    // console.log('todo props', this.props)
+    console.log('todo props', this.props);
     return React.createElement(
       'li',
       { key: this.props.key, dataId: this.props.dataId, isCompleted: this.props.isCompleted, isRemoved: this.props.isRemoved, className: 'list-group-item clearfix' },
       React.createElement(
         'div',
         { className: 'pull-left' },
-        this.props.children
+        this.props.text
       ),
       React.createElement(
         'div',
         { className: 'btn-group pull-right' },
         React.createElement(TodoCompleteCheck, { dataId: this.props.dataId, isCompleted: this.props.isCompleted }),
-        React.createElement(TodoRemoveCheck, { dataId: this.props.dataId, isRemoved: this.props.isRemoved })
+        React.createElement(TodoRemoveCheck, { dataId: this.props.dataId, isRemoved: this.props.isRemoved, onClick: this.textClick })
       )
     );
   }
 });
+
+// EXAMPLE
+
+var TaskList = React.createClass({
+  displayName: 'TaskList',
+
+  deleteElement: function deleteElement() {
+    console.log("remove");
+  },
+
+  render: function render() {
+    var _this2 = this;
+
+    var displayTask = function displayTask(task, taskIndex) {
+      console.log("NEW ADDED TASK" + task);
+
+      return React.createElement(
+        'li',
+        null,
+        task,
+        React.createElement(
+          'button',
+          { onClick: this.deleteElement },
+          ' Delete '
+        )
+      );
+    };
+
+    return React.createElement(
+      'ul',
+      null,
+      this.props.items.map(function (task, taskIndex) {
+        return React.createElement(
+          'li',
+          { key: taskIndex },
+          task,
+          React.createElement(
+            'button',
+            { onClick: _this2.props.deleteTask, value: taskIndex },
+            ' Delete '
+          )
+        );
+      })
+    );
+  }
+});
+
+var TaskApp = React.createClass({
+  displayName: 'TaskApp',
+
+  getInitialState: function getInitialState() {
+    return {
+      items: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+      task: ''
+    };
+  },
+
+  deleteTask: function deleteTask(e) {
+    var taskIndex = parseInt(e.target.value, 10);
+    console.log('remove task: %d', taskIndex, this.state.items[taskIndex]);
+    this.setState(function (state) {
+      state.items.splice(taskIndex, 1);
+      return { items: state.items };
+    });
+  },
+
+  onChange: function onChange(e) {
+    this.setState({ task: e.target.value });
+  },
+
+  addTask: function addTask(e) {
+    this.setState({
+      items: this.state.items.concat([this.state.task]),
+
+      task: ''
+    });
+
+    e.preventDefault();
+  },
+
+  render: function render() {
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'h1',
+        null,
+        'My Task '
+      ),
+      React.createElement(TaskList, { items: this.state.items, deleteTask: this.deleteTask }),
+      React.createElement(
+        'form',
+        { onSubmit: this.addTask },
+        React.createElement('input', { onChange: this.onChange, type: 'text', value: this.state.task }),
+        React.createElement(
+          'button',
+          null,
+          ' Add Task '
+        )
+      )
+    );
+  }
+});
+
+// React.render(<TaskApp />, document.getElementById('todoapp'));
+
+// END EXAMPLE
 
 // <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
 //<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
@@ -245,7 +359,7 @@ var TodoRemoveCheck = React.createClass({
   render: function render() {
     return React.createElement(
       'button',
-      { dataId: this.props.dataId, type: 'button', className: 'btn btn-danger', onClick: this.handleClick },
+      { dataId: this.props.dataId, type: 'button', className: 'btn btn-danger', handleRemove: this.props.handleRemove },
       React.createElement('span', { className: 'glyphicon glyphicon-remove' })
     );
   }
