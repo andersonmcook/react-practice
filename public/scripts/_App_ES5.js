@@ -185,7 +185,7 @@ var TaskList = React.createClass({
           React.createElement(
             'button',
             { className: 'btn btn-success', onClick: _this2.props.deleteTask, dataId: task.time, value: taskIndex },
-            React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+            'Done'
           )
         )
       );
@@ -197,6 +197,8 @@ var TaskList = React.createClass({
     );
   }
 });
+
+//<span onClick={this.props.deleteTask} dataId={task.time} value={taskIndex} className='glyphicon glyphicon-ok'></span>
 //
 var TaskApp = React.createClass({
   displayName: 'TaskApp',
@@ -231,7 +233,7 @@ var TaskApp = React.createClass({
   deleteTask: function deleteTask(e) {
     // console.log('this.state deelete' this.state)
     var taskIndex = parseInt(e.target.value, 10);
-    console.log(e.target.value);
+    console.log('e.target', e.target);
     console.log('HERE IS INDEX', taskIndex);
     var test = this.state.items[taskIndex];
     console.log('here!!!!---->', test);

@@ -140,7 +140,7 @@ const TaskList = React.createClass({
        <li key={taskIndex} dataId={task.time} className='list-group-item clearfix'>
           <div className='pull-left'>{task.todo}</div>
           <div className='btn-group pull-right'>
-            <button className='btn btn-success' onClick={this.props.deleteTask} dataId={task.time} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
+            <button className='btn btn-success' onClick={this.props.deleteTask} dataId={task.time} value={taskIndex}>Done</button>
           </div>
         </li>
       )
@@ -152,6 +152,8 @@ const TaskList = React.createClass({
     )
   }
  });
+
+//<span onClick={this.props.deleteTask} dataId={task.time} value={taskIndex} className='glyphicon glyphicon-ok'></span>
 //
 const TaskApp = React.createClass({
     getInitialState: function(){
@@ -184,7 +186,7 @@ const TaskApp = React.createClass({
     deleteTask: function(e) {
       // console.log('this.state deelete' this.state)
         const taskIndex = parseInt(e.target.value, 10);
-        console.log(e.target.value)
+        console.log('e.target', e.target)
         console.log('HERE IS INDEX', taskIndex)
         const test = this.state.items[taskIndex]
         console.log('here!!!!---->', test)
