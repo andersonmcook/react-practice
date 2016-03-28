@@ -175,7 +175,6 @@ var TaskList = React.createClass({
 
     var displayTask = function displayTask(task, taskIndex) {
       console.log("NEW ADDED TASK" + task);
-
       return React.createElement(
         'li',
         null,
@@ -187,10 +186,9 @@ var TaskList = React.createClass({
         )
       );
     };
-
     return React.createElement(
       'ul',
-      null,
+      { className: 'list-group' },
       this.props.items.map(function (task, taskIndex) {
         return React.createElement(
           'li',
@@ -214,7 +212,7 @@ var TaskList = React.createClass({
     );
   }
 });
-
+//
 var TaskApp = React.createClass({
   displayName: 'TaskApp',
 
@@ -257,6 +255,23 @@ var TaskApp = React.createClass({
   },
 
   addTask: function addTask(e) {
+    //
+    this.state.isRemoved = false;
+    // this.setState({data: newTodos})
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: this.state,
+      success: function (data) {
+        // this.setState({data: todos})
+        console.log('success', data);
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString());
+      }.bind(this)
+    });
+    //
     console.log('addtask', this.state);
     this.setState({
       items: this.state.items.concat([this.state]),
@@ -271,6 +286,11 @@ var TaskApp = React.createClass({
     return React.createElement(
       'div',
       null,
+      React.createElement(
+        'h1',
+        null,
+        ' My Todos '
+      ),
       React.createElement(
         'form',
         { className: 'form-inline', onSubmit: this.addTask },
@@ -298,9 +318,6 @@ var TaskApp = React.createClass({
 React.render(React.createElement(TaskApp, { url: 'api/todos' }), document.getElementById('todoapp'));
 
 // END EXAMPLE//////////////////////////////////////////////////////////////////////////////////
-
-// <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
-//<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
 
 // todo checkmark
 var TodoCompleteCheck = React.createClass({

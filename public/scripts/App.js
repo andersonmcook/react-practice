@@ -133,46 +133,42 @@ const Todo = React.createClass({
 // EXAMPLE //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const TaskList = React.createClass({
-    deleteElement:function(){
-        console.log("remove");
-    },
+  deleteElement:function(){
+    console.log("remove");
+  },
 
-    render: function(){
-
-        var displayTask  = function(task, taskIndex){
-            console.log("NEW ADDED TASK"+task);
-
-            return <li>
-                {task}
-                <button onClick= {this.deleteElement}> Delete </button>
-            </li>;
-        };
-
-        return <ul>
-            {this.props.items.map((task, taskIndex) =>
-              <li key={taskIndex} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
-                <div className='pull-left'>{task.todo}</div>
-                <div className='btn-group pull-right'>
-                  <button className='btn btn-success' onClick={this.props.deleteTask} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
-                </div>
-              </li>
-
-            )}
-
-
-
-
-        </ul>;
+  render: function(){
+    const displayTask  = function(task, taskIndex){
+      console.log("NEW ADDED TASK"+task);
+      return (
+        <li>
+          {task}
+          <button onClick= {this.deleteElement}> Delete </button>
+        </li>
+      )
     }
+    return (
+      <ul className='list-group'>
+        {this.props.items.map((task, taskIndex) =>
+          <li key={taskIndex} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
+            <div className='pull-left'>{task.todo}</div>
+            <div className='btn-group pull-right'>
+              <button className='btn btn-success' onClick={this.props.deleteTask} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
+            </div>
+          </li>
+        )}
+      </ul>
+    )
+  }
  });
-
+//
 const TaskApp = React.createClass({
     getInitialState: function(){
-        return {
-             items: [],
-             todo: ''
-        }
-    },
+      return {
+           items: [],
+           todo: ''
+      }
+  },
     componentDidMount: function () {
       this.loadTodos()
     },
@@ -208,6 +204,23 @@ const TaskApp = React.createClass({
 
 
     addTask:function (e){
+      //
+      this.state.isRemoved = false
+      // this.setState({data: newTodos})
+      $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        type: 'POST',
+        data: this.state,
+        success: function (data) {
+          // this.setState({data: todos})
+          console.log('success', data)
+        }.bind(this),
+        error: function (xhr, status, error) {
+          console.error(this.props.url, status, error.toString())
+        }.bind(this)
+      })
+      //
       console.log('addtask', this.state)
         this.setState({
             items: this.state.items.concat([this.state]),
@@ -221,6 +234,7 @@ const TaskApp = React.createClass({
     render: function(){
         return(
           <div>
+            <h1> My Todos </h1>
             <form className='form-inline' onSubmit={this.addTask}>
               <div className='form-group'>
                 <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.todo} onChange={this.onChange}/>
@@ -230,20 +244,14 @@ const TaskApp = React.createClass({
             <h4>Todo List</h4>
             <TaskList items={this.state.items} deleteTask={this.deleteTask}/>
           </div>
-        );
+        )
     }
-});
+})
 
-React.render(<TaskApp url='api/todos'/>, document.getElementById('todoapp'));
+React.render(<TaskApp url='api/todos'/>, document.getElementById('todoapp'))
 
 // END EXAMPLE//////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-            // <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
-//<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
 
 // todo checkmark
 const TodoCompleteCheck = React.createClass({
