@@ -161,7 +161,7 @@ var Todo = React.createClass({
   }
 });
 
-// EXAMPLE
+// EXAMPLE //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var TaskList = React.createClass({
   displayName: 'TaskList',
@@ -194,12 +194,20 @@ var TaskList = React.createClass({
       this.props.items.map(function (task, taskIndex) {
         return React.createElement(
           'li',
-          { key: taskIndex },
-          task,
+          { key: taskIndex, dataId: _this2.props.dataId, isCompleted: _this2.props.isCompleted, isRemoved: _this2.props.isRemoved, className: 'list-group-item clearfix' },
           React.createElement(
-            'button',
-            { onClick: _this2.props.deleteTask, value: taskIndex },
-            ' Delete '
+            'div',
+            { className: 'pull-left' },
+            task
+          ),
+          React.createElement(
+            'div',
+            { className: 'btn-group pull-right' },
+            React.createElement(
+              'button',
+              { className: 'btn btn-success', onClick: _this2.props.deleteTask, value: taskIndex },
+              React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+            )
           )
         );
       })
@@ -245,28 +253,32 @@ var TaskApp = React.createClass({
       'div',
       null,
       React.createElement(
-        'h1',
-        null,
-        'My Task '
-      ),
-      React.createElement(TaskList, { items: this.state.items, deleteTask: this.deleteTask }),
-      React.createElement(
         'form',
-        { onSubmit: this.addTask },
-        React.createElement('input', { onChange: this.onChange, type: 'text', value: this.state.task }),
+        { className: 'form-inline', onSubmit: this.addTask },
+        React.createElement(
+          'div',
+          { className: 'form-group' },
+          React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Write a todo item here', value: this.state.task, onChange: this.onChange })
+        ),
         React.createElement(
           'button',
-          null,
-          ' Add Task '
+          { type: 'submit', className: 'btn btn-default' },
+          'Add Todo'
         )
-      )
+      ),
+      React.createElement(
+        'h4',
+        null,
+        'Todo List'
+      ),
+      React.createElement(TaskList, { items: this.state.items, deleteTask: this.deleteTask })
     );
   }
 });
 
-// React.render(<TaskApp />, document.getElementById('todoapp'));
+React.render(React.createElement(TaskApp, null), document.getElementById('todoapp'));
 
-// END EXAMPLE
+// END EXAMPLE//////////////////////////////////////////////////////////////////////////////////
 
 // <button type="button" className='btn btn-danger'><span className='glyphicon glyphicon-remove'></span></button>
 //<button type="button" className='btn btn-success'><span className='glyphicon glyphicon-ok'></span></button>
@@ -366,4 +378,4 @@ var TodoRemoveCheck = React.createClass({
 });
 // end delete
 
-ReactDOM.render(React.createElement(TodoApp, { url: '/api/todos' }), document.getElementById('todoapp'));
+// ReactDOM.render(<TodoApp url='/api/todos'/>, document.getElementById('todoapp'))

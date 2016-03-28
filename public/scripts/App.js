@@ -130,9 +130,9 @@ const Todo = React.createClass({
   }
 })
 
-// EXAMPLE
+// EXAMPLE //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var TaskList = React.createClass({
+const TaskList = React.createClass({
     deleteElement:function(){
         console.log("remove");
     },
@@ -150,16 +150,23 @@ var TaskList = React.createClass({
 
         return <ul>
             {this.props.items.map((task, taskIndex) =>
-                <li key={taskIndex}>
-                    {task}
-                    <button onClick={this.props.deleteTask} value={taskIndex}> Delete </button>
-                </li>
+              <li key={taskIndex} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
+                <div className='pull-left'>{task}</div>
+                <div className='btn-group pull-right'>
+                  <button className='btn btn-success' onClick={this.props.deleteTask} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
+                </div>
+              </li>
+
             )}
+
+
+
+
         </ul>;
     }
  });
 
-var TaskApp = React.createClass({
+const TaskApp = React.createClass({
     getInitialState: function(){
         return {
              items: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
@@ -194,22 +201,23 @@ var TaskApp = React.createClass({
 
     render: function(){
         return(
-            <div>
-                <h1>My Task </h1>
-                <TaskList items={this.state.items} deleteTask={this.deleteTask} />
-
-                <form onSubmit={this.addTask}>
-                    <input onChange={this.onChange} type="text" value={this.state.task}/>
-                    <button> Add Task </button>
-                </form>
-            </div>
+          <div>
+            <form className='form-inline' onSubmit={this.addTask}>
+              <div className='form-group'>
+                <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.task} onChange={this.onChange}/>
+              </div>
+              <button type='submit' className='btn btn-default'>Add Todo</button>
+            </form>
+            <h4>Todo List</h4>
+            <TaskList items={this.state.items} deleteTask={this.deleteTask}/>
+          </div>
         );
     }
 });
 
-// React.render(<TaskApp />, document.getElementById('todoapp'));
+React.render(<TaskApp />, document.getElementById('todoapp'));
 
-// END EXAMPLE
+// END EXAMPLE//////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -306,4 +314,4 @@ const TodoRemoveCheck = React.createClass({
 // end delete
 
 
-ReactDOM.render(<TodoApp url='/api/todos'/>, document.getElementById('todoapp'))
+// ReactDOM.render(<TodoApp url='/api/todos'/>, document.getElementById('todoapp'))
