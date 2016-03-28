@@ -215,9 +215,11 @@ var TaskApp = React.createClass({
       url: this.props.url,
       // dataType: 'json',
       cache: false,
-      success: function (data) {
+      success: function (data, status, xhr) {
         this.setState({ items: data });
-        console.log('loadTodos', data);
+        console.log('loadTodos data', data);
+        // console.log('loadTodos status', status)
+        // console.log('loadTodos xhr', xhr)
       }.bind(this),
       error: function (xhr, status, error) {
         console.error(this.props.url, status, error.toString());
@@ -264,39 +266,43 @@ var TaskApp = React.createClass({
   addTask: function addTask(e) {
     //
     e.preventDefault();
-    // this.state.isRemoved = false
-    // this.state.time = Date.now()
-    // this.setState({data: newTodos})
-    // this.setState({todo: e.target.value, isRemoved: false, time: Date.now()})
-    var todo = { todo: this.state.todo, isRemoved: false, time: Date.now() };
-    // console.log('addTask state', this.state)
-    // $.post(this.props.url, todo, data => {
-    //   console.log('data',data)
-    // })
-    $.ajax({
-      url: this.props.url,
-      // dataType: 'json',
-      type: 'POST',
-      data: todo,
-      success: function (data) {
-        // this.setState({data: todos})
-        console.log('success', data);
-        // this.setState({
-        //   items: this.state.items.concat([this.state]),
-        //   todo: ''
-        // })
-      }.bind(this),
-      error: function (xhr, status, error) {
-        console.error(this.props.url, status, error.toString());
-      }.bind(this)
-    });
-    //
-    console.log('addtask', this.state);
-    this.setState({
-      // items: this.state.items.concat([this.state]),
-      items: this.state.items.concat([todo]),
-      todo: ''
-    });
+    var input = this.state.todo.trim();
+    if (input) {
+      // console.log('not blank')
+      // this.state.isRemoved = false
+      // this.state.time = Date.now()
+      // this.setState({data: newTodos})
+      // this.setState({todo: e.target.value, isRemoved: false, time: Date.now()})
+      var todo = { todo: input, isRemoved: false, time: Date.now() };
+      // console.log('addTask state', this.state)
+      // $.post(this.props.url, todo, data => {
+      //   console.log('data',data)
+      // })
+      $.ajax({
+        url: this.props.url,
+        // dataType: 'json',
+        type: 'POST',
+        data: todo,
+        success: function (data) {
+          // this.setState({data: todos})
+          console.log('success', data);
+          // this.setState({
+          //   items: this.state.items.concat([this.state]),
+          //   todo: ''
+          // })
+        }.bind(this),
+        error: function (xhr, status, error) {
+          console.error(this.props.url, status, error.toString());
+        }.bind(this)
+      });
+      //
+      console.log('addtask', this.state);
+      this.setState({
+        // items: this.state.items.concat([this.state]),
+        items: this.state.items.concat([todo]),
+        todo: ''
+      });
+    }
     // e.preventDefault();
   },
 
