@@ -20,17 +20,21 @@ module.exports = {
   },
 
   createTodo (req, res) {
+    console.log('req.body', req.body)
       Todo.create(req.body, (err, data) => {
       if (err) throw err;
-      // console.log('created data', data)
+      console.log('created data', data)
     })
   },
 
   updateTodo (req, res) {
-    const updateCompleted = !(JSON.parse(req.body.isCompleted))
-    Todo.findOneAndUpdate({_id: req.params.todoID}, {isCompleted: updateCompleted}, {new: true}, function (err, doc) {
+    // const updateCompleted = !(JSON.parse(req.body.isCompleted))
+    const toRemove = JSON.parse(req.body.time)
+    console.log('req.body',req.body)
+    console.log('req.body.time', req.body.time)
+    Todo.findOneAndUpdate({time: req.params.todoID}, {isRemoved: true}, {new: true}, function (err, doc) {
       if (err) {
-        console.log(err)
+        throw err
       }
       console.log('updated doc', doc)
     })

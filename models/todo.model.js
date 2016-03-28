@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 
 const Todo = mongoose.Schema({
   todo: String,
-  isCompleted: Boolean,
+  time: Number,
   isRemoved: Boolean
 })
 

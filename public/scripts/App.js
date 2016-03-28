@@ -150,10 +150,10 @@ const TaskList = React.createClass({
     return (
       <ul className='list-group'>
         {this.props.items.map((task, taskIndex) =>
-          <li key={taskIndex} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
+          <li key={taskIndex} dataId={task.time}className='list-group-item clearfix'>
             <div className='pull-left'>{task.todo}</div>
             <div className='btn-group pull-right'>
-              <button className='btn btn-success' onClick={this.props.deleteTask} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
+              <button className='btn btn-success' onClick={this.props.deleteTask} dataId={task.time} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
             </div>
           </li>
         )}
@@ -189,8 +189,29 @@ const TaskApp = React.createClass({
     },
 
     deleteTask: function(e) {
+      // console.log('this.state deelete' this.state)
         var taskIndex = parseInt(e.target.value, 10);
+        const test = this.state.items[taskIndex]
+        test.isRemoved = true
+        console.log('test', test.time)
+        console.log('this.props delete', this.state.items[taskIndex])
         console.log('remove task: %d', taskIndex, this.state.items[taskIndex]);
+        //
+        $.ajax({
+          url: `/api/todos/${test.time}`,
+          dataType: 'json',
+          type: 'POST',
+          data: test,
+          success: function (data) {
+            // this.setState({data: todos})
+            console.log('handleclick data', data)
+            console.log('success')
+          }.bind(this),
+          error: function (xhr, status, error) {
+            console.error(this.props.url, status, error.toString())
+          }.bind(this)
+        })
+        //
         this.setState(state => {
             state.items.splice(taskIndex, 1);
             return {items: state.items};
@@ -205,8 +226,11 @@ const TaskApp = React.createClass({
 
     addTask:function (e){
       //
-      this.state.isRemoved = false
+      // this.state.isRemoved = false
+      // this.state.time = Date.now()
       // this.setState({data: newTodos})
+      this.setState({todo: e.target.value, isRemoved: false, time: Date.now()})
+      console.log('addTask state', this.state)
       $.ajax({
         url: this.props.url,
         dataType: 'json',
@@ -222,13 +246,11 @@ const TaskApp = React.createClass({
       })
       //
       console.log('addtask', this.state)
-        this.setState({
-            items: this.state.items.concat([this.state]),
-
-            todo: ''
-        })
-
-        e.preventDefault();
+      this.setState({
+        items: this.state.items.concat([this.state]),
+        todo: ''
+      })
+      e.preventDefault();
     },
 
     render: function(){

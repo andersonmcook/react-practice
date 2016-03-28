@@ -192,7 +192,7 @@ var TaskList = React.createClass({
       this.props.items.map(function (task, taskIndex) {
         return React.createElement(
           'li',
-          { key: taskIndex, dataId: _this2.props.dataId, isCompleted: _this2.props.isCompleted, isRemoved: _this2.props.isRemoved, className: 'list-group-item clearfix' },
+          { key: taskIndex, dataId: task.time, className: 'list-group-item clearfix' },
           React.createElement(
             'div',
             { className: 'pull-left' },
@@ -203,7 +203,7 @@ var TaskList = React.createClass({
             { className: 'btn-group pull-right' },
             React.createElement(
               'button',
-              { className: 'btn btn-success', onClick: _this2.props.deleteTask, value: taskIndex },
+              { className: 'btn btn-success', onClick: _this2.props.deleteTask, dataId: task.time, value: taskIndex },
               React.createElement('span', { className: 'glyphicon glyphicon-ok' })
             )
           )
@@ -242,8 +242,29 @@ var TaskApp = React.createClass({
   },
 
   deleteTask: function deleteTask(e) {
+    // console.log('this.state deelete' this.state)
     var taskIndex = parseInt(e.target.value, 10);
+    var test = this.state.items[taskIndex];
+    test.isRemoved = true;
+    console.log('test', test.time);
+    console.log('this.props delete', this.state.items[taskIndex]);
     console.log('remove task: %d', taskIndex, this.state.items[taskIndex]);
+    //
+    $.ajax({
+      url: '/api/todos/' + test.time,
+      dataType: 'json',
+      type: 'POST',
+      data: test,
+      success: function (data) {
+        // this.setState({data: todos})
+        console.log('handleclick data', data);
+        console.log('success');
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString());
+      }.bind(this)
+    });
+    //
     this.setState(function (state) {
       state.items.splice(taskIndex, 1);
       return { items: state.items };
@@ -256,8 +277,11 @@ var TaskApp = React.createClass({
 
   addTask: function addTask(e) {
     //
-    this.state.isRemoved = false;
+    // this.state.isRemoved = false
+    // this.state.time = Date.now()
     // this.setState({data: newTodos})
+    this.setState({ todo: e.target.value, isRemoved: false, time: Date.now() });
+    console.log('addTask state', this.state);
     $.ajax({
       url: this.props.url,
       dataType: 'json',
@@ -275,10 +299,8 @@ var TaskApp = React.createClass({
     console.log('addtask', this.state);
     this.setState({
       items: this.state.items.concat([this.state]),
-
       todo: ''
     });
-
     e.preventDefault();
   },
 
