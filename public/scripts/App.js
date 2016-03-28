@@ -151,7 +151,7 @@ const TaskList = React.createClass({
         return <ul>
             {this.props.items.map((task, taskIndex) =>
               <li key={taskIndex} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
-                <div className='pull-left'>{task}</div>
+                <div className='pull-left'>{task.todo}</div>
                 <div className='btn-group pull-right'>
                   <button className='btn btn-success' onClick={this.props.deleteTask} value={taskIndex}><span className='glyphicon glyphicon-ok'></span></button>
                 </div>
@@ -169,9 +169,27 @@ const TaskList = React.createClass({
 const TaskApp = React.createClass({
     getInitialState: function(){
         return {
-             items: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
-             task: ''
+             items: [],
+             todo: ''
         }
+    },
+    componentDidMount: function () {
+      this.loadTodos()
+    },
+
+    loadTodos: function () {
+      $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+          this.setState({items: data})
+          console.log('loadTodos', data)
+        }.bind(this),
+        error: function (xhr, status, error) {
+          console.error(this.props.url, status, error.toString())
+        }.bind(this)
+      })
     },
 
     deleteTask: function(e) {
@@ -184,16 +202,17 @@ const TaskApp = React.createClass({
     },
 
     onChange: function(e) {
-        this.setState({ task: e.target.value });
+        this.setState({ todo: e.target.value });
     },
 
 
 
     addTask:function (e){
+      console.log('addtask', this.state)
         this.setState({
-            items: this.state.items.concat([this.state.task]),
+            items: this.state.items.concat([this.state]),
 
-            task: ''
+            todo: ''
         })
 
         e.preventDefault();
@@ -204,7 +223,7 @@ const TaskApp = React.createClass({
           <div>
             <form className='form-inline' onSubmit={this.addTask}>
               <div className='form-group'>
-                <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.task} onChange={this.onChange}/>
+                <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.todo} onChange={this.onChange}/>
               </div>
               <button type='submit' className='btn btn-default'>Add Todo</button>
             </form>
@@ -215,7 +234,7 @@ const TaskApp = React.createClass({
     }
 });
 
-React.render(<TaskApp />, document.getElementById('todoapp'));
+React.render(<TaskApp url='api/todos'/>, document.getElementById('todoapp'));
 
 // END EXAMPLE//////////////////////////////////////////////////////////////////////////////////
 

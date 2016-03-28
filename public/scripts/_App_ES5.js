@@ -198,7 +198,7 @@ var TaskList = React.createClass({
           React.createElement(
             'div',
             { className: 'pull-left' },
-            task
+            task.todo
           ),
           React.createElement(
             'div',
@@ -220,9 +220,27 @@ var TaskApp = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      items: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
-      task: ''
+      items: [],
+      todo: ''
     };
+  },
+  componentDidMount: function componentDidMount() {
+    this.loadTodos();
+  },
+
+  loadTodos: function loadTodos() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function (data) {
+        this.setState({ items: data });
+        console.log('loadTodos', data);
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString());
+      }.bind(this)
+    });
   },
 
   deleteTask: function deleteTask(e) {
@@ -235,14 +253,15 @@ var TaskApp = React.createClass({
   },
 
   onChange: function onChange(e) {
-    this.setState({ task: e.target.value });
+    this.setState({ todo: e.target.value });
   },
 
   addTask: function addTask(e) {
+    console.log('addtask', this.state);
     this.setState({
-      items: this.state.items.concat([this.state.task]),
+      items: this.state.items.concat([this.state]),
 
-      task: ''
+      todo: ''
     });
 
     e.preventDefault();
@@ -258,7 +277,7 @@ var TaskApp = React.createClass({
         React.createElement(
           'div',
           { className: 'form-group' },
-          React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Write a todo item here', value: this.state.task, onChange: this.onChange })
+          React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Write a todo item here', value: this.state.todo, onChange: this.onChange })
         ),
         React.createElement(
           'button',
@@ -276,7 +295,7 @@ var TaskApp = React.createClass({
   }
 });
 
-React.render(React.createElement(TaskApp, null), document.getElementById('todoapp'));
+React.render(React.createElement(TaskApp, { url: 'api/todos' }), document.getElementById('todoapp'));
 
 // END EXAMPLE//////////////////////////////////////////////////////////////////////////////////
 
