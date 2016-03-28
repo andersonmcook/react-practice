@@ -107,10 +107,13 @@ const TodoList = React.createClass({
 // each todo
 // should be a li
 const Todo = React.createClass({
+  onTodoComplete: function (todo) {
+    console.log('handleTodoComplete', todo)
+  },
   render: function () {
     // console.log('todo props', this.props)
     return (
-      <li key={this.props.key} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix'>
+      <li key={this.props.key} dataId={this.props.dataId} isCompleted={this.props.isCompleted} isRemoved={this.props.isRemoved} className='list-group-item clearfix' onTodoComplete={this.handleTodoComplete}>
         <div className='pull-left'>{this.props.children}</div>
         <div className='btn-group pull-right'>
             <TodoCompleteCheck dataId={this.props.dataId} isCompleted={this.props.isCompleted}/>
@@ -160,11 +163,17 @@ const TodoCompleteCheck = React.createClass({
     this.setState({isCompleted: !this.state.isCompleted});
     // console.log('check click after', !this.state.isCompleted)
   },
+  handleCompleteClick: function (event) {
+    // pass upwards
+    console.log('event', event)
+    this.props.onTodoComplete({isCompleted: this.state.isCompleted})
+    this.setState({isCompleted: !this.state.isCompleted})
+  },
   render: function() {
     const glyphicon = this.state.isCompleted ? 'glyphicon glyphicon-repeat' : 'glyphicon glyphicon-ok'
     const color = this.state.isCompleted ? 'btn btn-warning' : 'btn btn-success'
     return (
-      <button dataId={this.props.dataId} type="button" className={color} onClick={this.handleClick}><span className={glyphicon}></span></button>
+      <button dataId={this.props.dataId} type="button" className={color} onClick={this.handleCompleteClick}><span className={glyphicon}></span></button>
     )
   }
 })
@@ -174,7 +183,7 @@ const TodoCompleteCheck = React.createClass({
 
 const TodoRemoveCheck = React.createClass({
   getInitialState: function() {
-    return {isRemoved: false};
+    return {isRemoved: false}
   },
   componentDidMount: function () {
     // console.log('this.props in removecheck', this.props)

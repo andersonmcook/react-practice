@@ -134,11 +134,14 @@ var TodoList = React.createClass({
 var Todo = React.createClass({
   displayName: 'Todo',
 
+  onTodoComplete: function onTodoComplete(todo) {
+    console.log('handleTodoComplete', todo);
+  },
   render: function render() {
     // console.log('todo props', this.props)
     return React.createElement(
       'li',
-      { key: this.props.key, dataId: this.props.dataId, isCompleted: this.props.isCompleted, isRemoved: this.props.isRemoved, className: 'list-group-item clearfix' },
+      { key: this.props.key, dataId: this.props.dataId, isCompleted: this.props.isCompleted, isRemoved: this.props.isRemoved, className: 'list-group-item clearfix', onTodoComplete: this.handleTodoComplete },
       React.createElement(
         'div',
         { className: 'pull-left' },
@@ -195,12 +198,18 @@ var TodoCompleteCheck = React.createClass({
     this.setState({ isCompleted: !this.state.isCompleted });
     // console.log('check click after', !this.state.isCompleted)
   },
+  handleCompleteClick: function handleCompleteClick(event) {
+    // pass upwards
+    console.log('event', event);
+    this.props.onTodoComplete({ isCompleted: this.state.isCompleted });
+    this.setState({ isCompleted: !this.state.isCompleted });
+  },
   render: function render() {
     var glyphicon = this.state.isCompleted ? 'glyphicon glyphicon-repeat' : 'glyphicon glyphicon-ok';
     var color = this.state.isCompleted ? 'btn btn-warning' : 'btn btn-success';
     return React.createElement(
       'button',
-      { dataId: this.props.dataId, type: 'button', className: color, onClick: this.handleClick },
+      { dataId: this.props.dataId, type: 'button', className: color, onClick: this.handleCompleteClick },
       React.createElement('span', { className: glyphicon })
     );
   }
