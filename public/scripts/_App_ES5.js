@@ -1,26 +1,26 @@
 'use strict';
 
-var TaskList = React.createClass({
-  displayName: 'TaskList',
+var TodoList = React.createClass({
+  displayName: 'TodoList',
 
   render: function render() {
     var _this = this;
 
-    var todos = this.props.items.map(function (task, taskIndex) {
+    var todos = this.props.items.map(function (todo, index) {
       return React.createElement(
         'li',
-        { key: taskIndex, dataId: task.time, className: 'list-group-item clearfix' },
+        { key: index, dataId: todo.time, className: 'list-group-item clearfix' },
         React.createElement(
           'div',
           { className: 'pull-left' },
-          task.todo
+          todo.todo
         ),
         React.createElement(
           'div',
           { className: 'btn-group pull-right' },
           React.createElement(
             'button',
-            { className: 'btn btn-success', onClick: _this.props.deleteTask, dataId: task.time, value: taskIndex },
+            { className: 'btn btn-success', onClick: _this.props.deleteTodo, dataId: todo.time, value: index },
             'Done'
           )
         )
@@ -34,8 +34,8 @@ var TaskList = React.createClass({
   }
 });
 
-var TaskApp = React.createClass({
-  displayName: 'TaskApp',
+var TodoApp = React.createClass({
+  displayName: 'TodoApp',
 
   getInitialState: function getInitialState() {
     return {
@@ -60,61 +60,53 @@ var TaskApp = React.createClass({
     });
   },
 
-  deleteTask: function deleteTask(e) {
-    var taskIndex = parseInt(e.target.value);
-    var todo = this.state.items[taskIndex];
+  deleteTodo: function deleteTodo(e) {
+    var todoIndex = parseInt(e.target.value);
+    var todo = this.state.items[todoIndex];
     todo.isRemoved = true;
-    var updatedItems = this.state.items.filter(function (el, index) {
-      return index !== taskIndex;
+    var items = this.state.items;
+    var updatedItems = items.filter(function (el, index) {
+      return index !== todoIndex;
     });
+    this.setState({ items: updatedItems });
     $.ajax({
       url: '/api/todos/' + todo.time,
       type: 'POST',
       data: todo,
       success: function (data, status, xhr) {
-        console.log('handleclick data', data);
         this.setState({ items: updatedItems });
       }.bind(this),
       error: function (xhr, status, error) {
+        this.setState({ items: items });
         console.error(this.props.url, status, error.toString());
       }.bind(this)
     });
-    // this.setState({items: updatedItems})
   },
 
   onChange: function onChange(e) {
     this.setState({ todo: e.target.value });
   },
 
-  addTask: function addTask(e) {
-    var _this2 = this;
-
-    //
+  addTodo: function addTodo(e) {
     e.preventDefault();
     var input = this.state.todo.trim();
+    var items = this.state.items;
     if (input) {
-      (function () {
-        var todo = { todo: input, isRemoved: false, time: Date.now() };
-        $.ajax({
-          url: _this2.props.url,
-          type: 'POST',
-          data: todo,
-          success: function (data) {
-            console.log('success', data);
-            this.setState({
-              items: this.state.items.concat([todo]),
-              todo: ''
-            });
-          }.bind(_this2),
-          error: function (xhr, status, error) {
-            console.error(this.props.url, status, error.toString());
-          }.bind(_this2)
-        });
-        // this.setState({
-        //   items: this.state.items.concat([todo]),
-        //   todo: ''
-        // })
-      })();
+      var todo = { todo: input, isRemoved: false, time: Date.now() };
+      this.setState({ items: items.concat([todo]) });
+      $.ajax({
+        url: this.props.url,
+        type: 'POST',
+        data: todo,
+        success: function (data) {
+          this.setState({ items: items.concat([data]) });
+        }.bind(this),
+        error: function (xhr, status, error) {
+          this.setState({ items: items });
+          console.error(this.props.url, status, error.toString());
+        }.bind(this)
+      });
+      this.setState({ todo: '' });
     }
   },
 
@@ -129,7 +121,7 @@ var TaskApp = React.createClass({
       ),
       React.createElement(
         'form',
-        { className: 'form-inline', onSubmit: this.addTask },
+        { className: 'form-inline', onSubmit: this.addTodo },
         React.createElement(
           'div',
           { className: 'form-group' },
@@ -146,9 +138,9 @@ var TaskApp = React.createClass({
         null,
         'Todo List'
       ),
-      React.createElement(TaskList, { items: this.state.items, deleteTask: this.deleteTask })
+      React.createElement(TodoList, { items: this.state.items, deleteTodo: this.deleteTodo })
     );
   }
 });
 
-React.render(React.createElement(TaskApp, { url: 'api/todos' }), document.getElementById('todoapp'));
+React.render(React.createElement(TodoApp, { url: 'api/todos' }), document.getElementById('todoapp'));

@@ -21,7 +21,8 @@ module.exports = {
       Todo.create(req.body, (err, data) => {
       if (err) throw err;
       console.log('created data', data)
-      res.sendStatus(200)
+      // res.sendStatus(200)
+      res.send(data)
     })
   },
 
