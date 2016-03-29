@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const mongoose = require('mongoose')
 
@@ -8,4 +8,4 @@ const Todo = mongoose.Schema({
   isRemoved: Boolean
 })
 
-module.exports = mongoose.model('Todos', Todo);
+module.exports = mongoose.model('Todos', Todo)

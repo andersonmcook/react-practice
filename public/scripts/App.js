@@ -18,7 +18,7 @@ const TodoList = React.createClass({
       </ul>
     )
   }
- });
+ })
 
 const TodoApp = React.createClass({
   getInitialState: function(){
@@ -68,11 +68,11 @@ const TodoApp = React.createClass({
   },
 
   onChange: function(e) {
-    this.setState({ todo: e.target.value });
+    this.setState({ todo: e.target.value })
   },
 
   addTodo:function (e){
-    e.preventDefault();
+    e.preventDefault()
     const input = this.state.todo.trim()
     const items = this.state.items
     if (input) {
