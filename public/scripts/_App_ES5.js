@@ -1,4 +1,5 @@
 'use strict';
+// maps over items and renders todo list
 
 var TodoList = React.createClass({
   displayName: 'TodoList',
@@ -33,20 +34,22 @@ var TodoList = React.createClass({
     );
   }
 });
-
+// todo app
 var TodoApp = React.createClass({
   displayName: 'TodoApp',
 
+  // blank initial state
   getInitialState: function getInitialState() {
     return {
       items: [],
       todo: ''
     };
   },
+  // once todoapp mounts then loadTodos
   componentDidMount: function componentDidMount() {
     this.loadTodos();
   },
-
+  // makes ajax request to route to get todos from db
   loadTodos: function loadTodos() {
     $.ajax({
       url: this.props.url,
@@ -59,7 +62,7 @@ var TodoApp = React.createClass({
       }.bind(this)
     });
   },
-
+  // delete todo from virtual dom and then sends to db, if error goes back to previous items
   deleteTodo: function deleteTodo(e) {
     var todoIndex = parseInt(e.target.value);
     var todo = this.state.items[todoIndex];
@@ -82,11 +85,11 @@ var TodoApp = React.createClass({
       }.bind(this)
     });
   },
-
+  // updates state based on todo input value
   onChange: function onChange(e) {
     this.setState({ todo: e.target.value });
   },
-
+  // add todo to virtual dom and then sends to db, if error goes back to previous items
   addTodo: function addTodo(e) {
     e.preventDefault();
     var input = this.state.todo.trim();
@@ -109,7 +112,7 @@ var TodoApp = React.createClass({
       this.setState({ todo: '' });
     }
   },
-
+  // renders todo list
   render: function render() {
     return React.createElement(
       'div',
@@ -142,5 +145,5 @@ var TodoApp = React.createClass({
     );
   }
 });
-
-React.render(React.createElement(TodoApp, { url: 'api/todos' }), document.getElementById('todoapp'));
+// render to DOM
+ReactDOM.render(React.createElement(TodoApp, { url: 'api/todos' }), document.getElementById('todoapp'));

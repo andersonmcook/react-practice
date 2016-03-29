@@ -1,5 +1,5 @@
 'use strict'
-
+// maps over items and renders todo list
 const TodoList = React.createClass({
   render: function(){
     const todos = this.props.items.map((todo, index) => {
@@ -19,18 +19,20 @@ const TodoList = React.createClass({
     )
   }
  })
-
+// todo app
 const TodoApp = React.createClass({
+  // blank initial state
   getInitialState: function(){
     return {
       items: [],
       todo: ''
     }
   },
+  // once todoapp mounts then loadTodos
   componentDidMount: function () {
     this.loadTodos()
   },
-
+  // makes ajax request to route to get todos from db
   loadTodos: function () {
     $.ajax({
       url: this.props.url,
@@ -43,7 +45,7 @@ const TodoApp = React.createClass({
       }.bind(this)
     })
   },
-
+  // delete todo from virtual dom and then sends to db, if error goes back to previous items
   deleteTodo: function(e) {
     const todoIndex = parseInt(e.target.value)
     const todo = this.state.items[todoIndex]
@@ -66,11 +68,11 @@ const TodoApp = React.createClass({
       }.bind(this)
     })
   },
-
+  // updates state based on todo input value
   onChange: function(e) {
     this.setState({ todo: e.target.value })
   },
-
+  // add todo to virtual dom and then sends to db, if error goes back to previous items
   addTodo:function (e){
     e.preventDefault()
     const input = this.state.todo.trim()
@@ -93,7 +95,7 @@ const TodoApp = React.createClass({
       this.setState({todo: ''})
     }
   },
-
+// renders todo list
   render: function(){
       return(
         <div>
@@ -110,5 +112,5 @@ const TodoApp = React.createClass({
       )
   }
 })
-
-React.render(<TodoApp url='api/todos'/>, document.getElementById('todoapp'))
+// render to DOM
+ReactDOM.render(<TodoApp url='api/todos'/>, document.getElementById('todoapp'))
