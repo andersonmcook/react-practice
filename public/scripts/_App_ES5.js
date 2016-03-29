@@ -143,4 +143,4 @@ var TodoApp = React.createClass({
   }
 });
 
-React.render(React.createElement(TodoApp, { url: 'api/todos' }), document.getElementById('todoapp'));
+ReactDOM.render(React.createElement(TodoApp, { url: 'api/todos' }), document.getElementById('todoapp'));

@@ -111,4 +111,4 @@ const TodoApp = React.createClass({
   }
 })
 
-React.render(<TodoApp url='api/todos'/>, document.getElementById('todoapp'))
+ReactDOM.render(<TodoApp url='api/todos'/>, document.getElementById('todoapp'))
