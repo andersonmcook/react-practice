@@ -7,12 +7,15 @@ var TodoList = React.createClass({
     var _this = this;
 
     var todos = this.props.items.map(function (todo, index) {
+      var completedButton = todo.isCompleted ? 'btn btn-warning' : 'btn btn-success';
+      var completedText = todo.isCompleted ? 'Redo' : 'Complete';
+      var todoText = todo.isCompleted ? { textDecoration: 'line-through', color: 'gray' } : { textDecoration: 'none' };
       return React.createElement(
         'li',
         { key: index, dataId: todo.time, className: 'list-group-item clearfix' },
         React.createElement(
           'div',
-          { className: 'pull-left' },
+          { style: todoText, className: 'pull-left' },
           todo.todo
         ),
         React.createElement(
@@ -20,8 +23,13 @@ var TodoList = React.createClass({
           { className: 'btn-group pull-right' },
           React.createElement(
             'button',
-            { className: 'btn btn-success', onClick: _this.props.deleteTodo, dataId: todo.time, value: index },
-            'Done'
+            { className: completedButton, onClick: _this.props.completeTodo, dataId: todo.time, isCompleted: todo.isCompleted, value: index },
+            completedText
+          ),
+          React.createElement(
+            'button',
+            { className: 'btn btn-danger', onClick: _this.props.deleteTodo, dataId: todo.time, value: index },
+            'Remove'
           )
         )
       );
@@ -60,6 +68,30 @@ var TodoApp = React.createClass({
     });
   },
 
+  completeTodo: function completeTodo(e) {
+    var todoIndex = parseInt(e.target.value);
+    var todo = this.state.items[todoIndex];
+    console.log(todo.isCompleted);
+    todo.isCompleted = !todo.isCompleted;
+    console.log(todo.isCompleted);
+    var items = this.state.items;
+    this.setState({ isCompleted: todo.isCompleted });
+    $.ajax({
+      url: '/api/todos/' + todo.time,
+      type: 'POST',
+      data: todo,
+      success: function (data, status, xhr) {
+        console.log('success', todo.isCompleted);
+        this.setState({ isCompleted: todo.isCompleted });
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.log('error', !todo.isCompleted);
+        this.setState({ isCompleted: !todo.isCompleted });
+        console.error(this.props.url, status, error.toString());
+      }.bind(this)
+    });
+  },
+
   deleteTodo: function deleteTodo(e) {
     var todoIndex = parseInt(e.target.value);
     var todo = this.state.items[todoIndex];
@@ -92,7 +124,7 @@ var TodoApp = React.createClass({
     var input = this.state.todo.trim();
     var items = this.state.items;
     if (input) {
-      var todo = { todo: input, isRemoved: false, time: Date.now() };
+      var todo = { todo: input, isRemoved: false, time: Date.now(), isCompleted: false };
       this.setState({ items: items.concat([todo]) });
       $.ajax({
         url: this.props.url,
@@ -138,7 +170,7 @@ var TodoApp = React.createClass({
         null,
         'Todo List'
       ),
-      React.createElement(TodoList, { items: this.state.items, deleteTodo: this.deleteTodo })
+      React.createElement(TodoList, { items: this.state.items, deleteTodo: this.deleteTodo, completeTodo: this.completeTodo })
     );
   }
 });

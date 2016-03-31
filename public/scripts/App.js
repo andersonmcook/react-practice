@@ -3,11 +3,15 @@
 const TodoList = React.createClass({
   render: function(){
     const todos = this.props.items.map((todo, index) => {
+      const completedButton = todo.isCompleted ? 'btn btn-warning' : 'btn btn-success'
+      const completedText = todo.isCompleted ? 'Redo' : 'Complete'
+      const todoText = todo.isCompleted ? {textDecoration: 'line-through', color: 'gray'} : {textDecoration: 'none'}
       return (
        <li key={index} dataId={todo.time} className='list-group-item clearfix'>
-          <div className='pull-left'>{todo.todo}</div>
+          <div style={todoText} className='pull-left'>{todo.todo}</div>
           <div className='btn-group pull-right'>
-            <button className='btn btn-success' onClick={this.props.deleteTodo} dataId={todo.time} value={index}>Done</button>
+            <button className={completedButton} onClick={this.props.completeTodo} dataId={todo.time} isCompleted={todo.isCompleted} value={index}>{completedText}</button>
+            <button className='btn btn-danger' onClick={this.props.deleteTodo} dataId={todo.time} value={index}>Remove</button>
           </div>
         </li>
       )
@@ -39,6 +43,30 @@ const TodoApp = React.createClass({
         this.setState({items: data})
       }.bind(this),
       error: function (xhr, status, error) {
+        console.error(this.props.url, status, error.toString())
+      }.bind(this)
+    })
+  },
+
+  completeTodo: function(e) {
+    const todoIndex = parseInt(e.target.value)
+    const todo = this.state.items[todoIndex]
+    console.log(todo.isCompleted)
+    todo.isCompleted = !todo.isCompleted
+    console.log(todo.isCompleted)
+    const items = this.state.items
+    this.setState({isCompleted: todo.isCompleted})
+    $.ajax({
+      url: `/api/todos/${todo.time}`,
+      type: 'POST',
+      data: todo,
+      success: function (data, status, xhr) {
+        console.log('success', todo.isCompleted)
+        this.setState({isCompleted: todo.isCompleted})
+      }.bind(this),
+      error: function (xhr, status, error) {
+        console.log('error', !todo.isCompleted)
+        this.setState({isCompleted: !todo.isCompleted})
         console.error(this.props.url, status, error.toString())
       }.bind(this)
     })
@@ -76,7 +104,7 @@ const TodoApp = React.createClass({
     const input = this.state.todo.trim()
     const items = this.state.items
     if (input) {
-      const todo = {todo: input, isRemoved: false, time: Date.now()}
+      const todo = {todo: input, isRemoved: false, time: Date.now(), isCompleted: false}
       this.setState({items: items.concat([todo])})
       $.ajax({
         url: this.props.url,
@@ -105,7 +133,7 @@ const TodoApp = React.createClass({
             <button type='submit' className='btn btn-default'>Add Todo</button>
           </form>
           <h4>Todo List</h4>
-          <TodoList items={this.state.items} deleteTodo={this.deleteTodo}/>
+          <TodoList items={this.state.items} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
         </div>
       )
   }
