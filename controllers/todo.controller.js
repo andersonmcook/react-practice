@@ -26,8 +26,7 @@ module.exports = {
   updateTodo (req, res) {
     Todo.findOneAndUpdate({time: req.params.todoID}, {isRemoved: req.body.isRemoved, isCompleted: req.body.isCompleted}, {new: true}, (err, data) => {
       if (err) throw err
-      // res.sendStatus(200)
-      res.sendStatus(500)
+      res.sendStatus(200)
     })
   }
 }

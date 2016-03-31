@@ -49,24 +49,22 @@ const TodoApp = React.createClass({
   },
 
   completeTodo: function(e) {
+    const items = this.state.items
     const todoIndex = parseInt(e.target.value)
     const todo = this.state.items[todoIndex]
-    console.log(todo.isCompleted)
-    todo.isCompleted = !todo.isCompleted
-    console.log(todo.isCompleted)
-    const items = this.state.items
-    this.setState({isCompleted: todo.isCompleted})
+    const complete = !todo.isCompleted
+    todo.isCompleted = complete
+    this.setState({isCompleted: complete})
     $.ajax({
       url: `/api/todos/${todo.time}`,
       type: 'POST',
       data: todo,
       success: function (data, status, xhr) {
-        console.log('success', todo.isCompleted)
-        this.setState({isCompleted: todo.isCompleted})
+        this.setState({isCompleted: complete})
       }.bind(this),
       error: function (xhr, status, error) {
-        console.log('error', !todo.isCompleted)
-        this.setState({isCompleted: !todo.isCompleted})
+        todo.isCompleted = !complete
+        this.setState({isCompleted: !complete})
         console.error(this.props.url, status, error.toString())
       }.bind(this)
     })
