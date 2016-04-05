@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 
 const todoRoutes = require('./routes/todo.routes')
 
+// consider putting these into separate config file
 const PORT = process.env.PORT || 3000
 const MONGODB_HOST = process.env.MONGODB_HOST || 'localhost'
 const MONGODB_PORT = process.env.MONGODB_PORT || 27017

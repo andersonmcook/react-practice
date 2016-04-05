@@ -1,5 +1,7 @@
 'use strict';
 
+// ideally each component would be in its own file
+
 var TodoList = React.createClass({
   displayName: 'TodoList',
 

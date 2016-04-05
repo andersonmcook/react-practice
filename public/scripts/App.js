@@ -1,5 +1,6 @@
 'use strict'
 
+// ideally each component would be in its own file
 const TodoList = React.createClass({
   render: function(){
     const todos = this.props.items.map((todo, index) => {
