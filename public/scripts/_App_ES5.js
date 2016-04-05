@@ -23,7 +23,7 @@ var TodoList = React.createClass({
           { className: 'btn-group pull-right' },
           React.createElement(
             'button',
-            { className: completedButton, onClick: _this.props.completeTodo, dataId: todo.time, isCompleted: todo.isCompleted, value: index },
+            { className: completedButton, onClick: _this.props.completeTodo(todo.time), dataId: todo.time, isCompleted: todo.isCompleted, value: index },
             completedText
           ),
           React.createElement(
@@ -68,26 +68,35 @@ var TodoApp = React.createClass({
     });
   },
 
-  completeTodo: function completeTodo(e) {
-    var items = this.state.items;
-    var todoIndex = parseInt(e.target.value);
-    var todo = this.state.items[todoIndex];
-    var complete = !todo.isCompleted;
-    todo.isCompleted = complete;
-    this.setState({ isCompleted: complete });
-    $.ajax({
-      url: '/api/todos/' + todo.time,
-      type: 'POST',
-      data: todo,
-      success: function (data, status, xhr) {
-        this.setState({ isCompleted: complete });
-      }.bind(this),
-      error: function (xhr, status, error) {
-        todo.isCompleted = !complete;
-        this.setState({ isCompleted: !complete });
-        console.error(this.props.url, status, error.toString());
-      }.bind(this)
-    });
+  completeTodo: function completeTodo(id) {
+    var _this2 = this;
+
+    return function (e) {
+      var items = _this2.state.items;
+      var todo = items.find(function (item) {
+        return item.time === id;
+      });
+      todo.isCompleted = !todo.isCompleted;
+      var todoIndex = items.indexOf(todo);
+      _this2.setState({ items: _this2.todoSlice(items, todo, todoIndex) });
+      $.ajax({
+        url: '/api/todos/' + todo.time,
+        type: 'POST',
+        data: todo,
+        success: function (data, status, xhr) {
+          this.setState({ items: this.todoSlice(items, data, todoIndex) });
+        }.bind(_this2),
+        error: function (xhr, status, error) {
+          this.setState({ items: items });
+          console.error(this.props.url, status, error.toString());
+        }.bind(_this2)
+      });
+    };
+  },
+
+  todoSlice: function todoSlice(array, todo, index) {
+    var newArray = array.slice(0, index).concat([todo]).concat(array.slice(index + 1));
+    return newArray;
   },
 
   deleteTodo: function deleteTodo(e) {
@@ -141,6 +150,14 @@ var TodoApp = React.createClass({
   },
 
   render: function render() {
+    var incompleteTodos = this.state.items.filter(function (x) {
+      return !x.isCompleted;
+    });
+    var completeTodos = this.state.items.filter(function (x) {
+      return x.isCompleted;
+    });
+    var incompleteText = incompleteTodos.length > 0 ? 'Incomplete' : '';
+    var completeText = completeTodos.length > 0 ? 'Complete' : '';
     return React.createElement(
       'div',
       null,
@@ -166,9 +183,15 @@ var TodoApp = React.createClass({
       React.createElement(
         'h4',
         null,
-        'Todo List'
+        incompleteText
       ),
-      React.createElement(TodoList, { items: this.state.items, deleteTodo: this.deleteTodo, completeTodo: this.completeTodo })
+      React.createElement(TodoList, { items: incompleteTodos, deleteTodo: this.deleteTodo, completeTodo: this.completeTodo }),
+      React.createElement(
+        'h4',
+        null,
+        completeText
+      ),
+      React.createElement(TodoList, { items: completeTodos, deleteTodo: this.deleteTodo, completeTodo: this.completeTodo })
     );
   }
 });

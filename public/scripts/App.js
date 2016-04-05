@@ -10,7 +10,7 @@ const TodoList = React.createClass({
        <li key={index} dataId={todo.time} className='list-group-item clearfix'>
           <div style={todoText} className='pull-left'>{todo.todo}</div>
           <div className='btn-group pull-right'>
-            <button className={completedButton} onClick={this.props.completeTodo} dataId={todo.time} isCompleted={todo.isCompleted} value={index}>{completedText}</button>
+            <button className={completedButton} onClick={this.props.completeTodo(todo.time)} dataId={todo.time} isCompleted={todo.isCompleted} value={index}>{completedText}</button>
             <button className='btn btn-danger' onClick={this.props.deleteTodo} dataId={todo.time} value={index}>Remove</button>
           </div>
         </li>
@@ -48,26 +48,31 @@ const TodoApp = React.createClass({
     })
   },
 
-  completeTodo: function(e) {
-    const items = this.state.items
-    const todoIndex = parseInt(e.target.value)
-    const todo = this.state.items[todoIndex]
-    const complete = !todo.isCompleted
-    todo.isCompleted = complete
-    this.setState({isCompleted: complete})
-    $.ajax({
-      url: `/api/todos/${todo.time}`,
-      type: 'POST',
-      data: todo,
-      success: function (data, status, xhr) {
-        this.setState({isCompleted: complete})
-      }.bind(this),
-      error: function (xhr, status, error) {
-        todo.isCompleted = !complete
-        this.setState({isCompleted: !complete})
-        console.error(this.props.url, status, error.toString())
-      }.bind(this)
-    })
+  completeTodo: function(id) {
+    return (e) => {
+      const items = this.state.items
+      const todo = items.find(item => item.time === id)
+      todo.isCompleted = !todo.isCompleted
+      const todoIndex = items.indexOf(todo)
+      this.setState({items: this.todoSlice(items, todo, todoIndex)})
+      $.ajax({
+        url: `/api/todos/${todo.time}`,
+        type: 'POST',
+        data: todo,
+        success: function (data, status, xhr) {
+          this.setState({items: this.todoSlice(items, data, todoIndex)})
+        }.bind(this),
+        error: function (xhr, status, error) {
+          this.setState({items: items})
+          console.error(this.props.url, status, error.toString())
+        }.bind(this)
+      })
+    }
+  },
+
+  todoSlice: function (array, todo, index) {
+    const newArray = array.slice(0, index).concat([todo]).concat(array.slice(index + 1))
+    return newArray
   },
 
   deleteTodo: function(e) {
@@ -121,6 +126,10 @@ const TodoApp = React.createClass({
   },
 
   render: function(){
+    const incompleteTodos = this.state.items.filter(x => !x.isCompleted)
+    const completeTodos = this.state.items.filter(x => x.isCompleted)
+    const incompleteText = incompleteTodos.length > 0 ? 'Incomplete' : ''
+    const completeText = completeTodos.length > 0 ? 'Complete' : ''
       return(
         <div>
           <h1> My Todos </h1>
@@ -130,8 +139,10 @@ const TodoApp = React.createClass({
             </div>
             <button type='submit' className='btn btn-default'>Add Todo</button>
           </form>
-          <h4>Todo List</h4>
-          <TodoList items={this.state.items} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
+          <h4>{incompleteText}</h4>
+          <TodoList items={incompleteTodos} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
+          <h4>{completeText}</h4>
+          <TodoList items={completeTodos} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
         </div>
       )
   }
