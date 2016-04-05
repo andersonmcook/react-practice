@@ -11,7 +11,7 @@ const TodoList = React.createClass({
           <div style={todoText} className='pull-left'>{todo.todo}</div>
           <div className='btn-group pull-right'>
             <button className={completedButton} onClick={this.props.completeTodo(todo.time)} dataId={todo.time} isCompleted={todo.isCompleted} value={index}>{completedText}</button>
-            <button className='btn btn-danger' onClick={this.props.deleteTodo} dataId={todo.time} value={index}>Remove</button>
+            <button className='btn btn-danger' onClick={this.props.deleteTodo(todo.time)} dataId={todo.time} value={index}>Remove</button>
           </div>
         </li>
       )
@@ -75,27 +75,29 @@ const TodoApp = React.createClass({
     return newArray
   },
 
-  deleteTodo: function(e) {
-    const todoIndex = parseInt(e.target.value)
-    const todo = this.state.items[todoIndex]
-    todo.isRemoved = true
-    const items = this.state.items
-    const updatedItems = items.filter((el, index) => {
-      return index !== todoIndex
-    })
-    this.setState({items: updatedItems})
-    $.ajax({
-      url: `/api/todos/${todo.time}`,
-      type: 'POST',
-      data: todo,
-      success: function (data, status, xhr) {
-        this.setState({items: updatedItems})
-      }.bind(this),
-      error: function (xhr, status, error) {
-        this.setState({items: items})
-        console.error(this.props.url, status, error.toString())
-      }.bind(this)
-    })
+  deleteTodo: function(id) {
+    return (e) => {
+      const items = this.state.items
+      const todo = items.find(item => item.time === id)
+      todo.isRemoved = true
+      const todoIndex = items.indexOf(todo)
+      const updatedItems = items.filter((el, index) => {
+        return index !== todoIndex
+      })
+      this.setState({items: updatedItems})
+      $.ajax({
+        url: `/api/todos/${todo.time}`,
+        type: 'POST',
+        data: todo,
+        success: function (data, status, xhr) {
+          this.setState({items: updatedItems})
+        }.bind(this),
+        error: function (xhr, status, error) {
+          this.setState({items: items})
+          console.error(this.props.url, status, error.toString())
+        }.bind(this)
+      })
+    }
   },
 
   onChange: function(e) {

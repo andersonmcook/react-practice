@@ -28,7 +28,7 @@ var TodoList = React.createClass({
           ),
           React.createElement(
             'button',
-            { className: 'btn btn-danger', onClick: _this.props.deleteTodo, dataId: todo.time, value: index },
+            { className: 'btn btn-danger', onClick: _this.props.deleteTodo(todo.time), dataId: todo.time, value: index },
             'Remove'
           )
         )
@@ -99,27 +99,33 @@ var TodoApp = React.createClass({
     return newArray;
   },
 
-  deleteTodo: function deleteTodo(e) {
-    var todoIndex = parseInt(e.target.value);
-    var todo = this.state.items[todoIndex];
-    todo.isRemoved = true;
-    var items = this.state.items;
-    var updatedItems = items.filter(function (el, index) {
-      return index !== todoIndex;
-    });
-    this.setState({ items: updatedItems });
-    $.ajax({
-      url: '/api/todos/' + todo.time,
-      type: 'POST',
-      data: todo,
-      success: function (data, status, xhr) {
-        this.setState({ items: updatedItems });
-      }.bind(this),
-      error: function (xhr, status, error) {
-        this.setState({ items: items });
-        console.error(this.props.url, status, error.toString());
-      }.bind(this)
-    });
+  deleteTodo: function deleteTodo(id) {
+    var _this3 = this;
+
+    return function (e) {
+      var items = _this3.state.items;
+      var todo = items.find(function (item) {
+        return item.time === id;
+      });
+      todo.isRemoved = true;
+      var todoIndex = items.indexOf(todo);
+      var updatedItems = items.filter(function (el, index) {
+        return index !== todoIndex;
+      });
+      _this3.setState({ items: updatedItems });
+      $.ajax({
+        url: '/api/todos/' + todo.time,
+        type: 'POST',
+        data: todo,
+        success: function (data, status, xhr) {
+          this.setState({ items: updatedItems });
+        }.bind(_this3),
+        error: function (xhr, status, error) {
+          this.setState({ items: items });
+          console.error(this.props.url, status, error.toString());
+        }.bind(_this3)
+      });
+    };
   },
 
   onChange: function onChange(e) {
