@@ -135,21 +135,21 @@ const TodoApp = React.createClass({
     const completeTodos = this.state.items.filter(x => x.isCompleted)
     const incompleteText = incompleteTodos.length > 0 ? 'Incomplete' : ''
     const completeText = completeTodos.length > 0 ? 'Complete' : ''
-      return(
-        <div>
-          <h1> My Todos </h1>
-          <form className='form-inline' onSubmit={this.addTodo}>
-            <div className='form-group'>
-              <input type='text' className='form-control' placeholder='Write a todo item here' value={this.state.todo} onChange={this.onChange}/>
-            </div>
-            <button type='submit' className='btn btn-default'>Add Todo</button>
-          </form>
-          <h4>{incompleteText}</h4>
-          <TodoList items={incompleteTodos} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
-          <h4>{completeText}</h4>
-          <TodoList items={completeTodos} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
-        </div>
-      )
+    return(
+      <div>
+        <h1> My Todos </h1>
+        <form className='form-inline' onSubmit={this.addTodo}>
+          <div className='form-group'>
+            <input type='text' className='form-control pull-left' placeholder='Write a todo item here' value={this.state.todo} onChange={this.onChange}/>
+          </div>
+          <button type='submit' className='btn btn-default' style={{marginLeft: '.75em'}}>Add Todo</button>
+        </form>
+        <h4>{incompleteText}</h4>
+        <TodoList items={incompleteTodos} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
+        <h4>{completeText}</h4>
+        <TodoList items={completeTodos} deleteTodo={this.deleteTodo} completeTodo={this.completeTodo}/>
+      </div>
+    )
   }
 })
 

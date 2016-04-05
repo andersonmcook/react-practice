@@ -181,11 +181,11 @@ var TodoApp = React.createClass({
         React.createElement(
           'div',
           { className: 'form-group' },
-          React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Write a todo item here', value: this.state.todo, onChange: this.onChange })
+          React.createElement('input', { type: 'text', className: 'form-control pull-left', placeholder: 'Write a todo item here', value: this.state.todo, onChange: this.onChange })
         ),
         React.createElement(
           'button',
-          { type: 'submit', className: 'btn btn-default' },
+          { type: 'submit', className: 'btn btn-default', style: { marginLeft: '.75em' } },
           'Add Todo'
         )
       ),
