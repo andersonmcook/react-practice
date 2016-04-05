@@ -90,7 +90,10 @@ const TodoApp = React.createClass({
         type: 'POST',
         data: todo,
         success: function (data, status, xhr) {
-          this.setState({items: updatedItems})
+          const dbItems = items.filter(el => {
+            return el.time !== data.time
+          })
+          this.setState({items: dbItems})
         }.bind(this),
         error: function (xhr, status, error) {
           this.setState({items: items})

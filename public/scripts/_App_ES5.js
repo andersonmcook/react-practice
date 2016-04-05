@@ -118,7 +118,10 @@ var TodoApp = React.createClass({
         type: 'POST',
         data: todo,
         success: function (data, status, xhr) {
-          this.setState({ items: updatedItems });
+          var dbItems = items.filter(function (el) {
+            return el.time !== data.time;
+          });
+          this.setState({ items: dbItems });
         }.bind(_this3),
         error: function (xhr, status, error) {
           this.setState({ items: items });
